@@ -1,5 +1,8 @@
 module GLTF
 
-# package code goes here
+using JSON, ModernGL
+
+include("glTFTypes.jl")
+include("glTFLoader.jl")
 
 end # module
