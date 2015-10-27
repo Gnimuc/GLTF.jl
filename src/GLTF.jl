@@ -1,5 +1,11 @@
 module GLTF
 
-# package code goes here
+
+import JSON
+
+
+include("glTFTypes.jl")
+include("glTFLoader.jl")
+
 
 end # module
