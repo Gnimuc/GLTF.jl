@@ -8,11 +8,10 @@ julia:
   - nightly
 notifications:
   email: false
-before_install:
-  - pip install codecov
-after_success:
-  - codecov
 # uncomment the following lines to override the default test script
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone(pwd()); Pkg.build("GLTF"); Pkg.test("GLTF"; coverage=true)'
+
+after_success:
+- julia -e 'cd(Pkg.dir("GLTF")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codedov.process_folder())'
