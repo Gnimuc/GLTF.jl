@@ -31,3 +31,7 @@ accessor = GLTFAccessor(bufferView, 2, 3, 4, "type")
 @test accessor.componentType == 3
 @test accessor.count == 4
 @test accessor._type == "type"
+
+animation = GLTFAnimation()
+camera = GLTFCamera("perspective")
+@test camera._type == "perspective"
