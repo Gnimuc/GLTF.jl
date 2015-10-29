@@ -45,14 +45,14 @@ GLTFAnimation(;channels=GLTFAnimationChannel[], parameters=Dict{AbstractString, 
 # asset
 type GLTFProfile
     api::AbstractString
-    version::AbstractString
+    version::VersionNumber
     extensions::Nullable{Dict}
     extras
 end
 GLTFProfile(;api="WebGL", version="1.0.3", extensions=Nullable{Dict}(), extras...) = GLTFProfile(api, version, extensions, extras)
 
 type GLTFAsset
-    version::AbstractString
+    version::VersionNumber
     premultipliedAlpha::Bool
     profile::GLTFProfile
     copyright::Nullable{AbstractString}
@@ -60,7 +60,7 @@ type GLTFAsset
     extensions::Nullable{Dict}
     extras
 end
-GLTFAsset(version::AbstractString; premultipliedAlpha=false, profile=GLTFProfile(),
+GLTFAsset(version; premultipliedAlpha=false, profile=GLTFProfile(),
           copyright=Nullable{AbstractString}(), generator=Nullable{AbstractString}(),
           extensions=Nullable{Dict}(), extras...) = GLTFAsset(version, premultipliedAlpha, profile, copyright, generator, extensions, extras)
 
@@ -141,16 +141,25 @@ GLTFCamera(_type::AbstractString; orthographic=Nullable{GLTFOrthographic}(), per
            name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFCamera(_type, orthographic, perspective, name, extensions, extras)
 
 
-# program & technique & material
+# shader & program & technique & material
+type GLTFShader
+    uri::AbstractString
+    _type::Integer
+    name::Nullable{AbstractString}
+    extensions::Nullable{Dict}
+    extras
+end
+GLTFShader(uri::AbstractString, _type::Integer; name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFShader(uri, _type, name, extensions, extras)
+
 type GLTFProgram
-    fragmentShader::AbstractString
-    vertexShader::AbstractString
+    fragmentShader::GLTFShader
+    vertexShader::GLTFShader
     attributes::Array{AbstractString, 1}  # names in shader
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
-GLTFProgram(fragmentShader::AbstractString, vertexShader::AbstractString; attributes=[],
+GLTFProgram(fragmentShader::GLTFShader, vertexShader::GLTFShader; attributes=AbstractString[],
             name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFProgram(fragmentShader, vertexShader, attributes, name, extensions, extras)
 
 type GLTFTechniqueParameter{T<:Union{Number, Bool, AbstractString, Array{Number, 1}, Array{Bool, 1}, Array{AbstractString, 1}}}
@@ -319,17 +328,6 @@ type GLTFTexture
 end
 GLTFTexture(sampler::GLTFSampler, source::GLTFImage; format=6408, internalFormat=6408, target=3553, _type=5121,
             name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFTexture(sampler, source, format, internalFormat, target, _type, name, extensions, extras)
-
-
-# shader
-type GLTFShader
-    uri::AbstractString
-    _type::Integer
-    name::Nullable{AbstractString}
-    extensions::Nullable{Dict}
-    extras
-end
-GLTFShader(uri::AbstractString, _type::Integer; name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFShader(uri, _type, name, extensions, extras)
 
 
 type GLTFObject
