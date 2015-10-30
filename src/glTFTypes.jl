@@ -87,7 +87,7 @@ type GLTFBufferView
     extras
 end
 GLTFBufferView(buffer::GLTFBuffer, byteOffset::Integer; byteLength=0, target=Nullable{Integer}(),
-               name=Nullable{String}(), extensions=Nullable{Dict}(), extras...) = GLTFBufferView(buffer, byteOffset, byteLength, target, name, extensions, extras)
+               name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFBufferView(buffer, byteOffset, byteLength, target, name, extensions, extras)
 
 type GLTFAccessor
     bufferView::GLTFBufferView
@@ -162,12 +162,14 @@ end
 GLTFProgram(fragmentShader::GLTFShader, vertexShader::GLTFShader; attributes=AbstractString[],
             name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFProgram(fragmentShader, vertexShader, attributes, name, extensions, extras)
 
-type GLTFTechniqueParameter{T<:Union{Number, Bool, AbstractString, Array{Number, 1}, Array{Bool, 1}, Array{AbstractString, 1}}}
+# type GLTFTechniqueParameter{T<:Union{Number, Bool, AbstractString, Array{Number, 1}, Array{Bool, 1}, Array{AbstractString, 1}}}
+type GLTFTechniqueParameter
     _type::Integer
     count::Nullable{Integer}
     node::Nullable{AbstractString}
     semantic::Nullable{AbstractString}
-    value::Nullable{T}
+    # value::Nullable{T}
+    value
     extensions::Nullable{Dict}
     extras
 end
@@ -203,7 +205,6 @@ type GLTFTechniqueStates
     extensions::Nullable{Dict}
     extras
 end
-GLTFTechniqueStates() = GLTFStates()
 GLTFTechniqueStates(;enable=Integer[], functions=Nullable{GLTFFunctions}(), extensions=Nullable{Dict}(), extras...) = GLTFTechniqueStates(enable, functions, extensions, extras)
 
 type GLTFTechnique
@@ -220,14 +221,15 @@ GLTFTechnique(program::GLTFProgram; parameters=Dict{AbstractString, GLTFTechniqu
               uniforms=Dict{AbstractString, AbstractString}(), states=GLTFTechniqueStates(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(),
               extras...) = GLTFTechnique(program, parameters, attributes, uniforms, states, name, extensions, extras)
 
-type GLTFMaterial{T<:Union{Number, Bool, AbstractString, Array{Number, 1}, Array{Bool, 1}, Array{AbstractString, 1}}}
-    values::Dict{AbstractString, T}
+# type GLTFMaterial{T<:Union{Number, Bool, AbstractString, Array{Number, 1}, Array{Bool, 1}, Array{AbstractString, 1}}}
+type GLTFMaterial
+    values::Dict{AbstractString, Any}
     technique::Nullable{GLTFTechnique}
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
-GLTFMaterial(;values=Dict{AbstractString, Bool}(), technique=Nullable{GLTFTechnique}(),
+GLTFMaterial(;values=Dict{AbstractString, Any}(), technique=Nullable{GLTFTechnique}(),
              name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFMaterial(values, technique, name, extensions, extras)
 
 

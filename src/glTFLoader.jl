@@ -1,10 +1,4 @@
 # glTF loader
-import JSON
-include("glTFTypes.jl")
-
-
-# rootDict = JSON.parsefile("./src/sphere.gltf")
-rootDict = JSON.parsefile("./src/vc.gltf")
 
 
 # asset
@@ -35,7 +29,87 @@ function loadasset(rootDict::Dict{AbstractString, Any})
     end
     return asset
 end
-# @show loadasset(rootDict)
+
+
+# buffer & bufferView & accessor
+function loadbuffer(bufferID::AbstractString, rootDict::Dict{AbstractString, Any})
+    bufferDict = rootDict["buffers"][bufferID]
+    @assert haskey(bufferDict, "uri") "not a valid buffer obj: cannot access property uri."
+    uri = get(bufferDict, "uri", nothing)
+    byteLength = get(bufferDict, "byteLength", 0)
+    _type = get(bufferDict, "type", "arraybuffer")
+    name = get(bufferDict, "name", Nullable{AbstractString}())
+    extensions = get(bufferDict, "extensions", Nullable{Dict}())
+    extras = get(bufferDict, "extras", ())
+    buffer = GLTFBuffer(uri, byteLength, _type, name, extensions, extras)
+end
+
+function loadbuffers(rootDict::Dict{AbstractString, Any})
+    buffersDict = rootDict["buffers"]
+    buffers = Dict{AbstractString, GLTFBuffer}()
+    for key in keys(buffersDict)
+        buffer = loadbuffer(key, rootDict)
+        merge!(buffers, Dict([(key, buffer)]))
+    end
+    return buffers
+end
+
+function loadbufferview(viewID::AbstractString, rootDict::Dict{AbstractString, Any})
+    viewDict = rootDict["bufferViews"][viewID]
+    @assert haskey(viewDict, "buffer") "not a valid bufferView obj: cannot access property buffer."
+    bufferID = get(viewDict, "buffer", nothing)
+    buffer = loadbuffer(bufferID, rootDict)
+    @assert haskey(viewDict, "byteOffset") "not a valid bufferView obj: cannot access property byteOffset."
+    byteOffset = get(viewDict, "byteOffset", nothing)
+    byteLength = get(viewDict, "byteLength", 0)
+    target = get(viewDict, "target", Nullable{Integer}())
+    name = get(viewDict, "name", Nullable{AbstractString}())
+    extensions = get(viewDict, "extensions", Nullable{Dict}())
+    extras = get(viewDict, "extras", ())
+    view = GLTFBufferView(buffer, byteOffset, byteLength, target, name, extensions, extras)
+end
+
+function loadbufferviews(rootDict::Dict{AbstractString, Any})
+    viewsDict = rootDict["bufferViews"]
+    views = Dict{AbstractString, GLTFBufferView}()
+    for key in keys(viewsDict)
+        view = loadbufferview(key, rootDict)
+        merge!(views, Dict([(key, view)]))
+    end
+    return views
+end
+
+function loadaccessor(accessorID::AbstractString, rootDict::Dict{AbstractString, Any})
+    accessorDict = rootDict["accessors"][accessorID]
+    @assert haskey(accessorDict, "bufferView") "not a valid accessor obj: cannot access property bufferView."
+    bufferViewID = get(accessorDict, "bufferView", nothing)
+    view = loadbufferview(bufferViewID, rootDict)
+    @assert haskey(accessorDict, "byteOffset") "not a valid accessor obj: cannot access property byteOffset."
+    byteOffset = get(accessorDict, "byteOffset", nothing)
+    @assert haskey(accessorDict, "componentType") "not a valid accessor obj: cannot access property componentType."
+    componentType = get(accessorDict, "componentType", nothing)
+    @assert haskey(accessorDict, "byteOffset") "not a valid accessor obj: cannot access property count."
+    count = get(accessorDict, "count", nothing)
+    @assert haskey(accessorDict, "byteOffset") "not a valid accessor obj: cannot access property type."
+    _type = get(accessorDict, "type", nothing)
+    byteStride = get(accessorDict, "byteStride", 0)
+    max = get(accessorDict, "max", Nullable{Int}())
+    min = get(accessorDict, "min", Nullable{Int}())
+    extensions = get(accessorDict, "extensions", Nullable{Dict}())
+    extras = get(accessorDict, "extras", ())
+    accessor = GLTFAccessor(bufferView, byteOffset, componentType, count, _type, byteStride, max, min, name, extensions, extras)
+end
+
+function loadaccessors(rootDict::Dict{AbstractString, Any})
+    accessorsDict = rootDict["accessors"]
+    accessors = Dict{AbstractString, GLTFAccessor}()
+    for key in keys(accessorsDict)
+        accessor = loadaccessor(key, rootDict)
+        merge!(accessors, Dict([(key, accessor)]))
+    end
+    return accessors
+end
+
 
 # shader & program & technique & material
 function loadshader(shaderID::AbstractString, rootDict::Dict{AbstractString, Any})
@@ -49,6 +123,7 @@ function loadshader(shaderID::AbstractString, rootDict::Dict{AbstractString, Any
     extras = get(shaderDict, "extras", ())
     shader = GLTFShader(uri, _type, name, extensions, extras)
 end
+
 function loadshaders(rootDict::Dict{AbstractString, Any})
     shadersDict = rootDict["shaders"]
     shaders = Dict{AbstractString, GLTFShader}()
@@ -74,6 +149,7 @@ function loadprogram(programID::AbstractString, rootDict::Dict{AbstractString, A
     extras = get(programDict, "extras", ())
     program = GLTFProgram(fragmentShader, vertexShader, attributes, name, extensions, extras)
 end
+
 function loadprograms(rootDict::Dict{AbstractString, Any})
     programsDict = rootDict["programs"]
     programs = Dict{AbstractString, GLTFProgram}()
@@ -83,7 +159,6 @@ function loadprograms(rootDict::Dict{AbstractString, Any})
     end
     return programs
 end
-# @show loadprograms(rootDict)
 
 function loadtechniqueparameter(parameterID::AbstractString, techniqueID::AbstractString , rootDict::Dict{AbstractString, Any})
     parameterDict = rootDict["techniques"][techniqueID]["parameters"][parameterID]
@@ -96,25 +171,97 @@ function loadtechniqueparameter(parameterID::AbstractString, techniqueID::Abstra
     extras = get(parameterDict, "extras", ())
     parameter = GLTFTechniqueParameter(_type, count, node, semantic, value, extensions, extras)
 end
-# @show loadtechniqueparameter("ambient", "technique1", rootDict)
+
+function loadtechniqueparameters(techniqueID::AbstractString , rootDict::Dict{AbstractString, Any})
+    parametersDict = rootDict["techniques"][techniqueID]["parameters"]
+    parameters = Dict{AbstractString, GLTFTechniqueParameter}()
+    for key in keys(parametersDict)
+        parameter = loadtechniqueparameter(key, techniqueID, rootDict)
+        merge!(parameters, Dict([(key, parameter)]))
+    end
+    return parameters
+end
+
+function loadtechniquestatesfuncs(techniqueID::AbstractString, rootDict::Dict{AbstractString, Any})
+    funcsDict = rootDict["techniques"][techniqueID]["states"]["functions"]
+    blendColor = get(funcsDict, "blendColor", [0, 0, 0, 0])
+    blendEquationSeparate = get(funcsDict, "blendEquationSeparate", [32774, 32774])
+    blendFuncSeparate = get(functions, "blendFuncSeparate", [1, 1, 0, 0])
+    colorMask = get(funcsDict, "colorMask", [true, true, true, true])
+    cullFace = get(funcsDict, "cullFace", [1029])
+    depthFunc = get(funcsDict, "depthFunc", [513])
+    depthMask = get(funcsDict, "depthMask", [true])
+    depthRange = get(funcsDict, "depthRange", [0, 1])
+    frontFace = get(funcsDict, "frontFace", [2305])
+    lineWidth = get(funcsDict, "lineWidth", [1])
+    polygonOffset = get(funcsDict, "polygonOffset", [0, 0])
+    scissor = get(funcsDict, "scissor", [0, 0, 0, 0])
+    extensions = get(funcsDict, "extensions", Nullable{Dict}())
+    extras = get(funcsDict, "extras", ())
+    funcs = GLTFTechniqueStatesFunctions(blendColor, blendEquationSeparate, blendFuncSeparate, colorMask, cullFace, depthFunc,
+                                         depthMask, depthRange, frontFace, lineWidth, polygonOffset, scissor, extensions, extras)
+end
+
+function loadtechniquestates(techniqueID::AbstractString, rootDict::Dict{AbstractString, Any})
+    statesDict = rootDict["techniques"][techniqueID]["states"]
+    enable = get(statesDict, "enable", Integer[])
+    functions = get(statesDict, "functions", Nullable{GLTFTechniqueStatesFunctions}())
+    extensions = get(statesDict, "extensions", Nullable{Dict}())
+    extras = get(statesDict, "extras", ())
+    states = GLTFTechniqueStates(enable, functions, extensions, extras)
+end
+
+function loadtechnique(techniqueID::AbstractString, rootDict::Dict{AbstractString, Any})
+    techniqueDict = rootDict["techniques"][techniqueID]
+    @assert haskey(techniqueDict, "program") "not a valid technique obj: cannot access property program."
+    programID = get(techniqueDict, "program", nothing)
+    program = loadprogram(programID, rootDict)
+    parameters = loadtechniqueparameters(techniqueID, rootDict)
+    attributes = get(techniqueDict, "attributes", Dict{AbstractString, AbstractString}())
+    uniforms = get(techniqueDict, "uniforms", Dict{AbstractString, AbstractString}())
+    states = loadtechniquestates(techniqueID, rootDict)
+    name = get(techniqueDict, "name", Nullable{AbstractString}())
+    extensions = get(techniqueDict, "extensions", Nullable{Dict}())
+    extras = get(techniqueDict, "extras", ())
+    GLTFTechnique(program, parameters, attributes, uniforms, states, name, extensions, extras)
+end
+
+function loadtechniques(rootDict::Dict{AbstractString, Any})
+    techniquesDict = rootDict["techniques"]
+    techniques = Dict{AbstractString, GLTFTechnique}()
+    for key in keys(techniquesDict)
+        technique = loadtechnique(key, rootDict)
+        merge!(techniques, Dict([(key, technique)]))
+    end
+    return techniques
+end
+
+function loadmaterial(materialID::AbstractString, rootDict::Dict{AbstractString, Any})
+    materialDict = rootDict["materials"][materialID]
+    values = get(materialDict, "values", Dict{AbstractString, Any}())
+    if haskey(materialDict, "technique")
+        techniqueID = get(materialDict, "technique", nothing)
+        technique = loadtechnique(techniqueID, rootDict)
+    else
+        technique = Nullable{GLTFTechnique}()
+    end
+    name = get(materialDict, "name", Nullable{AbstractString}())
+    extensions = get(materialDict, "extensions", Nullable{Dict}())
+    extras = get(materialDict, "extras", ())
+    material = GLTFMaterial(values, technique, name, extensions, extras)
+end
+
+function loadmaterials(rootDict::Dict{AbstractString, Any})
+    materialsDict = rootDict["materials"]
+    materials = Dict{AbstractString, GLTFMaterial}()
+    for key in keys(materialsDict)
+        material = loadmaterial(key, rootDict)
+        merge!(materials, Dict([(key, material)]))
+    end
+    return materials
+end
 
 
-
-
-
-
-
-
-
-# techniques = rootDict["techniques"]
-# @show keys(techniques)
-# for key in keys(techniques)
-#     techniqueDict = techniques[key]
-#     @show techniqueDict
-#     program =
-#
+# mesh
+# function loadprimitive()
 # end
-
-
-
-# @show rootDict["programs"]
