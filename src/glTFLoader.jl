@@ -93,11 +93,12 @@ function loadaccessor(accessorID::AbstractString, rootDict::Dict{AbstractString,
     @assert haskey(accessorDict, "byteOffset") "not a valid accessor obj: cannot access property type."
     _type = get(accessorDict, "type", nothing)
     byteStride = get(accessorDict, "byteStride", 0)
-    max = get(accessorDict, "max", Nullable{Int}())
-    min = get(accessorDict, "min", Nullable{Int}())
+    max = get(accessorDict, "max", Array{Int, 1}())
+    min = get(accessorDict, "min", Array{Int, 1}())
+    name = get(accessorDict, "name", Nullable{AbstractString}())
     extensions = get(accessorDict, "extensions", Nullable{Dict}())
     extras = get(accessorDict, "extras", ())
-    accessor = GLTFAccessor(bufferView, byteOffset, componentType, count, _type, byteStride, max, min, name, extensions, extras)
+    accessor = GLTFAccessor(view, byteOffset, componentType, count, _type, byteStride, Nullable(max), Nullable(min), name, extensions, extras)
 end
 
 function loadaccessors(rootDict::Dict{AbstractString, Any})

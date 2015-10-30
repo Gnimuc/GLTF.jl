@@ -96,14 +96,14 @@ type GLTFAccessor
     count::Integer
     _type::AbstractString
     byteStride::Integer
-    max::Nullable{Int}
-    min::Nullable{Int}
+    max::Nullable{Array{Int, 1}}
+    min::Nullable{Array{Int, 1}}
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
 GLTFAccessor(bufferView::GLTFBufferView, byteOffset::Integer, componentType::Integer, count::Integer, _type::AbstractString;
-             byteStride=0, max=Nullable{Int}(), min=Nullable{Int}(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(),
+             byteStride=0, max=Nullable{Array{Int, 1}}(), min=Nullable{Array{Int, 1}}(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(),
              extras...) = GLTFAccessor(bufferView, byteOffset, componentType, count, _type, byteStride, max, min, name, extensions, extras)
 
 
