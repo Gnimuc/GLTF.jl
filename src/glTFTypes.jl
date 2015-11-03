@@ -22,12 +22,12 @@ end
 GLTFAnimationChannelTarget(id::AbstractString, path::AbstractString; extensions=Nullable{Dict}(), extras...) = GLTFAnimationChannelTarget(id, path, extensions, extras)
 
 type GLTFAnimationChannel
-    sampler::AbstractString
+    sampler::GLTFAnimationSampler
     target::GLTFAnimationChannelTarget
     extensions::Nullable{Dict}
     extras
 end
-GLTFAnimationChannel(sampler::AbstractString, target::GLTFAnimationChannelTarget; extensions=Nullable{Dict}(), extras...) = GLTFAnimationChannel(sampler, target, extensions, extras)
+GLTFAnimationChannel(sampler::GLTFAnimationSampler, target::GLTFAnimationChannelTarget; extensions=Nullable{Dict}(), extras...) = GLTFAnimationChannel(sampler, target, extensions, extras)
 
 type GLTFAnimation
     channels::Array{GLTFAnimationChannel, 1}

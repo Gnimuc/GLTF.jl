@@ -1,4 +1,61 @@
 {
+    "animations" : {
+        "animationid": {
+            "channels": [
+                {
+                    "sampler": "samplerid",
+                    "target": {
+                        "id": "node_id",
+                        "path": "rotation",
+                        "extensions" : {
+                            "extension_name" : {
+                                "extension specific" : "value"
+                            }
+                        },
+                        "extras" : {
+                            "Application specific" : "The extra object can contain any properties."
+                        }
+                    },
+                     "extensions" : {
+                         "extension_name" : {
+                             "extension specific" : "value"
+                         }
+                     },
+                    "extras" : {
+                        "Application specific" : "The extra object can contain any properties."
+                    }
+                }
+            ],
+            "name": "user-defined animation name",
+            "parameters": {
+                "TIME": "time_accessor",
+                "rotation": "rotation_accessor"
+            },
+            "samplers": {
+                "samplerid": {
+                    "input": "TIME",
+                    "interpolation": "LINEAR",
+                    "output": "rotation",
+                "extensions" : {
+                   "extension_name" : {
+                      "extension specific" : "value"
+                   }
+                },
+                    "extras" : {
+                        "Application specific" : "The extra object can contain any properties."
+                    }
+                }
+            },
+            "extensions" : {
+               "extension_name" : {
+                  "extension specific" : "value"
+               }
+            },
+            "extras" : {
+                "Application specific" : "The extra object can contain any properties."
+            }
+        }
+    },
     "accessors": {
         "accessor_index_0": {
             "bufferView": "bufferView_index",

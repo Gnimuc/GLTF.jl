@@ -1,8 +1,78 @@
 # glTF loader
 
 
+# animation
+function loadanimationsampler(samplerID::AbstractString, animationID::AbstractString, rootDict::Dict{AbstractString, Any})
+    samplerDict = rootDict["animations"][animationID]["samplers"][samplerID]
+    @assert haskey(samplerDict, "input") "not a valid animation sampler obj: cannot access property input."
+    input = get(samplerDict, "input", nothing)
+    @assert haskey(samplerDict, "output") "not a valid animation sampler obj: cannot access property output."
+    output = get(samplerDict, "output", nothing)
+    interpolation = get(samplerDict, "interpolation", "LINEAR")
+    extensions = get(samplerDict, "extensions", Nullable{Dict}())
+    extras = get(samplerDict, "extras", ())
+    sampler = GLTFAnimationSampler(input, output, interpolation, extensions, extras)
+end
+
+function loadanimationsamplers(animationID::AbstractString, rootDict::Dict{AbstractString, Any})
+    samplersDict = rootDict["animations"][animationID]["samplers"]
+    samplers = Dict{AbstractString, GLTFAnimationSampler}()
+    for key in keys(samplersDict)
+        sampler = loadanimationsampler(key, animationID, rootDict)
+        merge!(samplers, Dict([(key, sampler)]))
+    end
+    return samplers
+end
+
+function loadanimationchannels(animationID::AbstractString, rootDict::Dict{AbstractString, Any})
+    channelsDict = rootDict["animations"][animationID]["channels"]
+    channels = Array{GLTFAnimationChannel, 1}()
+    for channelDict in channelsDict
+        @assert haskey(channelDict, "sampler") "not a valid animation channel dict: cannot access property sampler."
+        samplerID = get(channelDict, "sampler", nothing)
+        sampler = loadanimationsampler(samplerID, animationID, rootDict)
+        @assert haskey(channelDict, "target") "not a valid animation channel dict: cannot access property target."
+        targetDict = get(channelDict, "target", nothing)
+        @assert haskey(targetDict, "id") "not a valid animation channel target dict: cannot access property id."
+        id = get(targetDict, "id", nothing)
+        @assert haskey(targetDict, "path") "not a valid animation channel target dict: cannot access property path."
+        path = get(targetDict, "path", nothing)
+        targetExtensions = get(targetDict, "extensions", Nullable{Dict}())
+        targetExtras = get(targetDict, "extras", ())
+        target = GLTFAnimationChannelTarget(id, path, targetExtensions, targetExtras)
+        extensions = get(channelDict, "extensions", Nullable{Dict}())
+        extras = get(channelDict, "extras", ())
+        channel = GLTFAnimationChannel(sampler, target, extensions, extras)
+        push!(channels, channel)
+    end
+    return channels
+end
+
+function loadanimation(animationID::AbstractString, rootDict::Dict{AbstractString, Any})
+    animationDict = rootDict["animations"][animationID]
+    channels = loadanimationchannels(animationID, rootDict)
+    parameters = animationDict["parameters"]    # ?
+    samplers = loadanimationsamplers(animationID, rootDict)
+    name = get(animationDict, "name", Nullable{AbstractString}())
+    extensions = get(animationDict, "extensions", Nullable{Dict}())
+    extras = get(animationDict, "extras", ())
+    animation = GLTFAnimation(channels, parameters, samplers, name, extensions, extras)
+end
+
+function loadanimations(rootDict::Dict{AbstractString, Any})
+    animationsDict = rootDict["animations"]
+    animations = Dict{AbstractString, GLTFAnimation}()
+    for key in keys(animationsDict)
+        animation = loadanimation(key, rootDict)
+        merge!(animations, Dict([(key, animation)]))
+    end
+    return animations
+end
+
+
 # asset
-function loadprofile(profileDict::Dict{AbstractString, Any})
+function loadprofile(rootDict::Dict{AbstractString, Any})
+    profileDict = rootDict["asset"]["profile"]
     api = get(profileDict, "api", "WebGL")
     version = get(profileDict, "version", v"1.0.3")
     extensions = get(profileDict, "extensions", Nullable{Dict}())
@@ -17,7 +87,7 @@ function loadasset(rootDict::Dict{AbstractString, Any})
         version = get(assetDict, "version", 0)
         premultipliedAlpha = get(assetDict, "premultipliedAlpha", false)
         if haskey(assetDict, "profile")
-            profile = loadprofile(assetDict["profile"])
+            profile = loadprofile(rootDict)
         else
             profile = GLTFProfile()
         end
