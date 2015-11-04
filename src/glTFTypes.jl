@@ -108,7 +108,7 @@ GLTFAccessor(bufferView::GLTFBufferView, byteOffset::Integer, componentType::Int
 
 
 # camera
-type GLTFOrthographic
+type GLTFCameraOrthographic
     xmag::Number
     ymag::Number
     zfar::Number
@@ -116,9 +116,9 @@ type GLTFOrthographic
     extensions::Nullable{Dict}
     extras
 end
-GLTFOrthographic(xmag::Number, ymag::Number, zfar::Number, znear::Number; extensions=Nullable{Dict}(), extras...) = GLTFOrthographic(xmag, ymag, zfar, znear, extensions, extras)
+GLTFCameraOrthographic(xmag::Number, ymag::Number, zfar::Number, znear::Number; extensions=Nullable{Dict}(), extras...) = GLTFCameraOrthographic(xmag, ymag, zfar, znear, extensions, extras)
 
-type GLTFPerspective
+type GLTFCameraPerspective
     yfov::Number
     zfar::Number
     znear::Number
@@ -126,18 +126,18 @@ type GLTFPerspective
     extensions::Nullable{Dict}
     extras
 end
-GLTFPerspective(yfov::Number, zfar::Number, znear::Number; aspectRatio=Nullable{Number}(),
-                extensions=Nullable{Dict}(), extras...) = GLTFPerspective(yfov, zfar, znear, aspectRatio, extensions, extras)
+GLTFCameraPerspective(yfov::Number, zfar::Number, znear::Number; aspectRatio=Nullable{Number}(),
+                extensions=Nullable{Dict}(), extras...) = GLTFCameraPerspective(yfov, zfar, znear, aspectRatio, extensions, extras)
 
 type GLTFCamera
     _type::AbstractString
-    orthographic::Nullable{GLTFOrthographic}
-    perspective::Nullable{GLTFPerspective}
+    orthographic::Nullable{GLTFCameraOrthographic}
+    perspective::Nullable{GLTFCameraPerspective}
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
-GLTFCamera(_type::AbstractString; orthographic=Nullable{GLTFOrthographic}(), perspective=Nullable{GLTFPerspective}(),
+GLTFCamera(_type::AbstractString; orthographic=Nullable{GLTFCameraOrthographic}(), perspective=Nullable{GLTFCameraPerspective}(),
            name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFCamera(_type, orthographic, perspective, name, extensions, extras)
 
 

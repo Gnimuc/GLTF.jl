@@ -182,6 +182,57 @@ function loadaccessors(rootDict::Dict{AbstractString, Any})
 end
 
 
+# camera
+function loadcameraorthograhic(cameraID::AbstractString, rootDict::Dict{AbstractString, Any})
+    orthographicDict = rootDict["cameras"][cameraID]["orthographic"]
+    @assert haskey(orthographicDict, "xmag") "not a valid orthographic obj: cannot access property xmag."
+    xmag = get(orthographicDict, "xmag", nothing)
+    @assert haskey(orthographicDict, "ymag") "not a valid orthographic obj: cannot access property ymag."
+    ymag = get(orthographicDict, "ymag", nothing)
+    @assert haskey(orthographicDict, "zfar") "not a valid orthographic obj: cannot access property zfar."
+    zfar = get(orthographicDict, "zfar", nothing)
+    @assert haskey(orthographicDict, "znear") "not a valid orthographic obj: cannot access property znear."
+    znear = get(orthographicDict, "znear", nothing)
+    extensions = get(orthographicDict, "extensions", Nullable{Dict}())
+    extras = get(orthographicDict, "extras", ())
+    orthographic = GLTFCameraOrthographic(xmag, ymag, zfar, znear, extensions, extras)
+end
+
+function loadcameraperspective(cameraID::AbstractString, rootDict::Dict{AbstractString, Any})
+    perspectiveDict = rootDict["cameras"][cameraID]["perspective"]
+    @assert haskey(perspectiveDict, "yfov") "not a valid perspective obj: cannot access property yfov."
+    yfov = get(perspectiveDict, "yfov", nothing)
+    @assert haskey(perspectiveDict, "zfar") "not a valid perspective obj: cannot access property zfar."
+    zfar = get(perspectiveDict, "zfar", nothing)
+    @assert haskey(perspectiveDict, "znear") "not a valid perspective obj: cannot access property znear."
+    znear = get(perspectiveDict, "znear", nothing)
+    aspectRatio = get(perspectiveDict, "aspectRatio", Nullable{Number}())
+    extensions = get(perspectiveDict, "extensions", Nullable{Dict}())
+    extras = get(perspectiveDict, "extras", ())
+    perspective = GLTFCameraPerspective(yfov, zfar, znear, aspectRatio, extensions, extras)
+end
+
+function loadcamera(cameraID::AbstractString, rootDict::Dict{AbstractString, Any})
+    cameraDict = rootDict["cameras"][cameraID]
+    @assert haskey(cameraDict, "type") "not a valid camera obj: cannot access property type."
+    _type = get(cameraDict, "type", nothing)
+    if _type == "orthographic"
+        orthographic = loadcameraorthograhic(cameraID, rootDict)
+    else
+        orthographic = Nullable{GLTFCameraOrthographic}()
+    end
+    if _type == "perspective"
+        perspective = loadcameraperspective(cameraID, rootDict)
+    else
+        perspective = Nullable{GLTFCameraPerspective}()
+    end
+    name = get(cameraDict, "name", Nullable{AbstractString}())
+    extensions = get(cameraDict, "extensions", Nullable{Dict}())
+    extras = get(cameraDict, "extras", ())
+    camera = GLTFCamera(_type, orthographic, perspective, name, extensions, extras)
+end
+
+
 # shader & program & technique & material
 function loadshader(shaderID::AbstractString, rootDict::Dict{AbstractString, Any})
     shaderDict = rootDict["shaders"][shaderID]
