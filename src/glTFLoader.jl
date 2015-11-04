@@ -232,6 +232,16 @@ function loadcamera(cameraID::AbstractString, rootDict::Dict{AbstractString, Any
     camera = GLTFCamera(_type, orthographic, perspective, name, extensions, extras)
 end
 
+function loadcameras(rootDict::Dict{AbstractString, Any})
+    camerasDict = rootDict["cameras"]
+    cameras = Dict{AbstractString, GLTFCamera}()
+    for key in keys(camerasDict)
+        camera = loadcamera(key, rootDict)
+        merge!(cameras, Dict([(key, camera)]))
+    end
+    return cameras
+end
+
 
 # shader & program & technique & material
 function loadshader(shaderID::AbstractString, rootDict::Dict{AbstractString, Any})
@@ -385,5 +395,64 @@ end
 
 
 # mesh
-# function loadprimitive()
-# end
+function loadmeshprimitives(meshID::AbstractString, rootDict::Dict{AbstractString, Any})
+    primitivesDict = rootDict["meshes"][meshID]["primitives"]
+    primitives = Array{GLTFMeshPrimitive, 1}()
+    for primitiveDict in primitivesDict
+        @assert haskey(primitiveDict, "material") "not a valid primitive dict: cannot access property material."
+        materialID = get(primitiveDict, "material", nothing)
+        material = loadmaterial(materialID, rootDict)
+        attributes = get(primitiveDict, "attributes", Dict{AbstractString, AbstractString}())
+        mode = get(primitiveDict, "mode", 4)
+        indices = get(primitiveDict, "indices", Nullable{AbstractString}())
+        extensions = get(primitiveDict, "extensions", Nullable{Dict}())
+        extras = get(primitiveDict, "extras", ())
+        primitive = GLTFMeshPrimitive(material, attributes, mode, indices, extensions, extras)
+        push!(primitives, primitive)
+    end
+    return primitives
+end
+
+function loadmesh(meshID::AbstractString, rootDict::Dict{AbstractString, Any})
+    meshDict = rootDict["meshes"][meshID]
+    primitives = loadmeshprimitives(meshID, rootDict)
+    name = get(meshDict, "name", Nullable{AbstractString}())
+    extensions = get(meshDict, "extensions", Nullable{Dict}())
+    extras = get(meshDict, "extras", ())
+    GLTFMesh(primitives, name, extensions, extras)
+end
+
+function loadmeshes(rootDict::Dict{AbstractString, Any})
+    meshesDict = rootDict["meshes"]
+    meshes = Dict{AbstractString, GLTFMesh}()
+    for key in keys(meshesDict)
+        mesh = loadmesh(key, rootDict)
+        merge!(meshes, Dict([(key, mesh)]))
+    end
+    return meshes
+end
+
+
+# skin & node & scene
+function loadskin(skinID::AbstractString, rootDict::Dict{AbstractString, Any})
+    skinDict = rootDict["skins"][skinID]
+    @assert haskey(skinDict, "inverseBindMatrices") "not a valid skin obj: cannot access property inverseBindMatrices."
+    inverseBindMatrices = get(skinDict, "inverseBindMatrices", nothing)    # ?
+    @assert haskey(skinDict, "jointNames") "not a valid skin obj: cannot access property jointNames."
+    jointNames = get(skinDict, "jointNames", nothing)
+    bindShapeMatrix = get(skinDict, "bindShapeMatrix", [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1])
+    name = get(skinDict, "name", Nullable{AbstractString}())
+    extensions = get(skinDict, "extensions", Nullable{Dict}())
+    extras = get(skinDict, "extras", ())
+    skin = GLTFSkin(inverseBindMatrices, jointNames, bindShapeMatrix, name, extensions, extras)
+end
+
+function loadskins(rootDict::Dict{AbstractString, Any})
+    skinsDict = rootDict["skins"]
+    skins = Dict{AbstractString, GLTFSkin}()
+    for key in keys(skinsDict)
+        skin = loadskin(key, rootDict)
+        merge!(skins, Dict([(key, skin)]))
+    end
+    return skins
+end

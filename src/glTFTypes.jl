@@ -234,7 +234,7 @@ GLTFMaterial(;values=Dict{AbstractString, Any}(), technique=Nullable{GLTFTechniq
 
 
 # mesh
-type GLTFPrimitive
+type GLTFMeshPrimitive
     material::GLTFMaterial
     attributes::Dict{AbstractString, AbstractString}
     mode::Integer
@@ -242,16 +242,16 @@ type GLTFPrimitive
     extensions::Nullable{Dict}
     extras
 end
-GLTFPrimitive(material::GLTFMaterial; attributes=Dict{AbstractString, AbstractString}(), mode=4,
-              indices=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFPrimitive(material, attributes, mode, indices, extensions, extras)
+GLTFMeshPrimitive(material::GLTFMaterial; attributes=Dict{AbstractString, AbstractString}(), mode=4,
+              indices=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFMeshPrimitive(material, attributes, mode, indices, extensions, extras)
 
 type GLTFMesh
-    primitives::Array{GLTFPrimitive, 1}
+    primitives::Array{GLTFMeshPrimitive, 1}
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
-GLTFMesh(;primitives=GLTFPrimitive[], name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFMesh(primitives, name, extensions, extras)
+GLTFMesh(;primitives=GLTFMeshPrimitive[], name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFMesh(primitives, name, extensions, extras)
 
 
 # skin & node & scene
