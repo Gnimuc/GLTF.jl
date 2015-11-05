@@ -96,14 +96,14 @@ type GLTFAccessor
     count::Integer
     _type::AbstractString
     byteStride::Integer
-    max::Nullable{Array{Int, 1}}
-    min::Nullable{Array{Int, 1}}
+    max::Nullable{Array{Number, 1}}
+    min::Nullable{Array{Number, 1}}
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
 GLTFAccessor(bufferView::GLTFBufferView, byteOffset::Integer, componentType::Integer, count::Integer, _type::AbstractString;
-             byteStride=0, max=Nullable{Array{Int, 1}}(), min=Nullable{Array{Int, 1}}(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(),
+             byteStride=0, max=Nullable{Array{Number, 1}}(), min=Nullable{Array{Number, 1}}(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(),
              extras...) = GLTFAccessor(bufferView, byteOffset, componentType, count, _type, byteStride, max, min, name, extensions, extras)
 
 
@@ -276,14 +276,14 @@ type GLTFNode
     skeletons::Nullable{Array{AbstractString, 1}}
     skin::Nullable{GLTFSkin}
     jointName::Nullable{AbstractString}
-    meshes::Nullable{Array{GLTFMesh, 1}}
+    meshes::Nullable{Dict{AbstractString, GLTFMesh}}
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
 GLTFNode(;children=AbstractString[], matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1], rotation=[0,0,0,0.1],
          scale=[1,1,1], translation=[0,0,0], camera=Nullable{GLTFCamera}(), skeletons=Nullable{Array{AbstractString, 1}}(),
-         skin=Nullable{GLTFSkin}(), jointName=Nullable{AbstractString}(), meshes=Nullable{Array{GLTFMesh, 1}}(),
+         skin=Nullable{GLTFSkin}(), jointName=Nullable{AbstractString}(), meshes=Nullable{Dict{AbstractString, GLTFMesh}}(),
          name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFNode(children, matrix, rotation, scale, translation, camera,
                                                                                              skeletons, skin, jointName, meshes, name, extensions, extras)
 
@@ -351,10 +351,33 @@ type GLTFObject
     techniques::Dict{AbstractString, GLTFTechnique}
     textures::Dict{AbstractString, GLTFTexture}
     extensionsUsed::Array{AbstractString, 1}
-    scene::Nullable{AbstractString}
+    scene::Nullable{GLTFScene}
     extensions::Nullable{Dict}
     extras
 end
+GLTFObject(;accessors=Dict{AbstractString, GLTFAccessor}(),
+            animation=Dict{AbstractString, GLTFAnimation}(),
+            asset=GLTFAsset(),
+            buffers=Dict{AbstractString, GLTFBuffer}(),
+            bufferViews=Dict{AbstractString, GLTFBufferView}(),
+            cameras=Dict{AbstractString, GLTFCamera}(),
+            images=Dict{AbstractString, GLTFImage}(),
+            materials=Dict{AbstractString, GLTFMaterial}(),
+            meshes=Dict{AbstractString, GLTFMesh}(),
+            nodes=Dict{AbstractString, GLTFNode}(),
+            programs=Dict{AbstractString, GLTFProgram}(),
+            samplers=Dict{AbstractString, GLTFSampler}(),
+            scenes=Dict{AbstractString, GLTFScene}(),
+            shaders=Dict{AbstractString, GLTFShader}(),
+            skins=Dict{AbstractString, GLTFSkin}(),
+            techniques=Dict{AbstractString, GLTFTechnique}(),
+            textures=Dict{AbstractString, GLTFTexture}(),
+            extensionsUsed=Array{AbstractString, 1}(),
+            scene=Nullable{GLTFScene}(),
+            extensions=Nullable{Dict}(),
+            extras...) = GLTFObject(accessors, animation, asset, buffers, bufferViews, cameras, images,
+                                    materials, meshes, nodes, programs, samplers, scenes, shaders, skins,
+                                    techniques, textures, extensionsUsed, scene, extensions, extras)
 
 
 

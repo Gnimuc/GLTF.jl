@@ -318,7 +318,7 @@ function loadtechniquestatesfuncs(techniqueID::AbstractString, rootDict::Dict{Ab
     funcsDict = rootDict["techniques"][techniqueID]["states"]["functions"]
     blendColor = get(funcsDict, "blendColor", [0, 0, 0, 0])
     blendEquationSeparate = get(funcsDict, "blendEquationSeparate", [32774, 32774])
-    blendFuncSeparate = get(functions, "blendFuncSeparate", [1, 1, 0, 0])
+    blendFuncSeparate = get(funcsDict, "blendFuncSeparate", [1, 1, 0, 0])
     colorMask = get(funcsDict, "colorMask", [true, true, true, true])
     cullFace = get(funcsDict, "cullFace", [1029])
     depthFunc = get(funcsDict, "depthFunc", [513])
@@ -337,7 +337,11 @@ end
 function loadtechniquestates(techniqueID::AbstractString, rootDict::Dict{AbstractString, Any})
     statesDict = rootDict["techniques"][techniqueID]["states"]
     enable = get(statesDict, "enable", Integer[])
-    functions = get(statesDict, "functions", Nullable{GLTFTechniqueStatesFunctions}())
+    if haskey(statesDict, "functions")
+        functions = loadtechniquestatesfuncs(techniqueID, rootDict)
+    else
+        functions = Nullable{GLTFTechniqueStatesFunctions}()
+    end
     extensions = get(statesDict, "extensions", Nullable{Dict}())
     extras = get(statesDict, "extras", ())
     states = GLTFTechniqueStates(enable, functions, extensions, extras)
@@ -455,4 +459,147 @@ function loadskins(rootDict::Dict{AbstractString, Any})
         merge!(skins, Dict([(key, skin)]))
     end
     return skins
+end
+
+function loadnode(nodeID::AbstractString, rootDict::Dict{AbstractString, Any})
+    nodeDict = rootDict["nodes"][nodeID]
+    children = get(nodeDict, "children", AbstractString[])    # ?
+    matrix = get(nodeDict, "matrix", [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1])
+    rotation = get(nodeDict, "rotation", [0,0,0,0.1])
+    scale = get(nodeDict, "scale", [1,1,1])
+    translation = get(nodeDict, "translation", [0,0,0])
+    if haskey(nodeDict, "camera")
+        cameraID = get(nodeDict, "camera", nothing)
+        camera = loadcamera(cameraID, rootDict)
+    else
+        camera = Nullable{GLTFCamera}()
+    end
+    skeletons = get(nodeDict, "skeletons", AbstractString[])    # ?
+    if haskey(nodeDict, "skin")
+        skinID = get(nodeDict, "skin", nothing)
+        skin = loadskin(skinID, rootDict)
+    else
+        skin = Nullable{GLTFSkin}()
+    end
+    jointName = get(nodeDict, "jointName", Nullable{AbstractString}())
+    meshes = Dict{AbstractString, GLTFMesh}()
+    if haskey(nodeDict, "meshes")
+        meshIDs = get(nodeDict, "meshes", nothing)
+        for id in meshIDs
+            mesh = loadmesh(id, rootDict)
+            merge!(meshes, Dict([(id, mesh)]))
+        end
+    end
+    name = get(nodeDict, "name", Nullable{AbstractString}())
+    extensions = get(nodeDict, "extensions", Nullable{Dict}())
+    extras = get(nodeDict, "extras", ())
+    node = GLTFNode(children, matrix, rotation, scale, translation, camera, Nullable(skeletons), skin, jointName, meshes, name, extensions, extras)
+end
+
+function loadnodes(rootDict::Dict{AbstractString, Any})
+    nodesDict = rootDict["nodes"]
+    nodes = Dict{AbstractString, GLTFNode}()
+    for key in keys(nodesDict)
+        node = loadnode(key, rootDict)
+        merge!(nodes, Dict([(key, node)]))
+    end
+    return nodes
+end
+
+function loadscene(sceneID::AbstractString, rootDict::Dict{AbstractString, Any})
+    sceneDict = rootDict["scenes"][sceneID]
+    nodes = Dict{AbstractString, GLTFNode}()
+    if haskey(sceneDict, "nodes")
+        nodeIDs = get(sceneDict, "nodes", nothing)
+        for id in nodeIDs
+            node = loadnode(id, rootDict)
+            merge!(nodes, Dict([(id, node)]))
+        end
+    end
+    name = get(sceneDict, "name", Nullable{AbstractString}())
+    extensions = get(sceneDict, "extensions", Nullable{Dict}())
+    extras = get(sceneDict, "extras", ())
+    scene = GLTFScene(nodes, name, extensions, extras)
+end
+
+function loadscenes(rootDict::Dict{AbstractString, Any})
+    scenesDict = rootDict["scenes"]
+    scenes = Dict{AbstractString, GLTFScene}()
+    for key in keys(scenesDict)
+        scene = loadscene(key, rootDict)
+        merge!(scenes, Dict([(key, scene)]))
+    end
+    return scenes
+end
+
+
+# sampler & image & texture
+function loadsampler(samplerID::AbstractString, rootDict::Dict{AbstractString, Any})
+    samplerDict = rootDict["samplers"][samplerID]
+    magFilter = get(samplerDict, "magFilter", 9729)
+    minFilter = get(samplerDict, "minFilter", 9729)
+    wrapS = get(samplerDict, "wrapS", 10497)
+    wrapT = get(samplerDict, "wrapT", 10497)
+    name = get(samplerDict, "name", Nullable{AbstractString}())
+    extensions = get(samplerDict, "extensions", Nullable{Dict}())
+    extras = get(samplerDict, "extras", ())
+    sampler = GLTFSampler(magFilter, minFilter, wrapS, wrapT, name, extensions, extras)
+end
+
+function loadsamplers(rootDict::Dict{AbstractString, Any})
+    samplersDict = rootDict["samplers"]
+    samplers = Dict{AbstractString, GLTFSampler}()
+    for key in keys(samplersDict)
+        sampler = loadsampler(key, rootDict)
+        merge!(samplers, Dict([(key, sampler)]))
+    end
+    return samplers
+end
+
+function loadimage(imageID::AbstractString, rootDict::Dict{AbstractString, Any})
+    imageDict = rootDict["images"][imageID]
+    @assert haskey(imageDict, "uri") "not a valid image obj: cannot access property uri."
+    uri = get(imageDict, "uri", nothing)
+    name = get(imageDict, "name", Nullable{AbstractString}())
+    extensions = get(imageDict, "extensions", Nullable{Dict}())
+    extras = get(imageDict, "extras", ())
+    image = GLTFImage(uri, name, extensions, extras)
+end
+
+function loadimages(rootDict::Dict{AbstractString, Any})
+    imagesDict = rootDict["images"]
+    images = Dict{AbstractString, GLTFImage}()
+    for key in keys(imagesDict)
+        image = loadimage(key, rootDict)
+        merge!(images, Dict([(key, image)]))
+    end
+    return images
+end
+
+function loadtexture(textureID::AbstractString, rootDict::Dict{AbstractString, Any})
+    textureDict = rootDict["textures"][textureID]
+    @assert haskey(textureDict, "sampler") "not a valid texture obj: cannot access property sampler."
+    samplerID = get(textureDict, "sampler", nothing)
+    sampler = loadsampler(samplerID, rootDict)
+    @assert haskey(textureDict, "source") "not a valid texture obj: cannot access property source."
+    sourceID = get(textureDict, "source", nothing)
+    source = loadimage(sourceID, rootDict)
+    format = get(textureDict, "format", 6408)
+    internalFormat = get(textureDict, "internalFormat", 6408)
+    target = get(textureDict, "target", 3553)
+    _type = get(textureDict, "type", 5121)
+    name = get(textureDict, "name", Nullable{AbstractString}())
+    extensions = get(textureDict, "extensions", Nullable{Dict}())
+    extras = get(textureDict, "extras", ())
+    GLTFTexture(sampler, source, format, internalFormat, target, _type, name, extensions, extras)
+end
+
+function loadtextures(rootDict::Dict{AbstractString, Any})
+    texturesDict = rootDict["textures"]
+    textures = Dict{AbstractString, GLTFTexture}()
+    for key in keys(texturesDict)
+        texture = loadtexture(key, rootDict)
+        merge!(textures, Dict([(key, texture)]))
+    end
+    return textures
 end
