@@ -5,7 +5,7 @@
 [![codecov.io](https://codecov.io/github/Gnimuc/GLTF.jl/coverage.svg?branch=master)](https://codecov.io/github/Gnimuc/GLTF.jl?branch=master)
 
 ## Installation
-Pkg.clone(https://github.com/Gnimuc/GLTF.jl.git)
+`Pkg.clone("https://github.com/Gnimuc/GLTF.jl.git")`
 
 ## Examples:
 ```julia
