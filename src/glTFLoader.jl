@@ -443,12 +443,12 @@ function loadskin(skinID::AbstractString, rootDict::Dict{AbstractString, Any})
     @assert haskey(skinDict, "inverseBindMatrices") "not a valid skin obj: cannot access property inverseBindMatrices."
     inverseBindMatrices = get(skinDict, "inverseBindMatrices", nothing)    # ?
     @assert haskey(skinDict, "jointNames") "not a valid skin obj: cannot access property jointNames."
-    jointNames = get(skinDict, "jointNames", nothing)
+    jointNames = convert(Array{AbstractString, 1}, get(skinDict, "jointNames", nothing))
     bindShapeMatrix = get(skinDict, "bindShapeMatrix", [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1])
     name = get(skinDict, "name", Nullable{AbstractString}())
     extensions = get(skinDict, "extensions", Nullable{Dict}())
     extras = get(skinDict, "extras", ())
-    skin = GLTFSkin(inverseBindMatrices, jointNames, bindShapeMatrix, name, extensions, extras)
+    skin = GLTFSkin{eltype(jointNames)}(inverseBindMatrices, jointNames, bindShapeMatrix, name, extensions, extras)
 end
 
 function loadskins(rootDict::Dict{AbstractString, Any})

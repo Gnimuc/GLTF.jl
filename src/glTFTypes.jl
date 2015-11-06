@@ -205,7 +205,7 @@ type GLTFTechniqueStates
     extensions::Nullable{Dict}
     extras
 end
-GLTFTechniqueStates(;enable=Integer[], functions=Nullable{GLTFFunctions}(), extensions=Nullable{Dict}(), extras...) = GLTFTechniqueStates(enable, functions, extensions, extras)
+GLTFTechniqueStates(;enable=Integer[], functions=Nullable{GLTFTechniqueStatesFunctions}(), extensions=Nullable{Dict}(), extras...) = GLTFTechniqueStates(enable, functions, extensions, extras)
 
 type GLTFTechnique
     program::GLTFProgram
@@ -255,15 +255,15 @@ GLTFMesh(;primitives=GLTFMeshPrimitive[], name=Nullable{AbstractString}(), exten
 
 
 # skin & node & scene
-type GLTFSkin
+type GLTFSkin{T<:AbstractString}
     inverseBindMatrices::AbstractString
-    jointNames::Array{AbstractString, 1}
+    jointNames::Array{T, 1}
     bindShapeMatrix
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
-GLTFSkin(inverseBindMatrices::AbstractString, jointNames::Array{AbstractString, 1}; bindShapeMatrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+GLTFSkin{T<:AbstractString}(inverseBindMatrices::AbstractString, jointNames::Array{T, 1}; bindShapeMatrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
          name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFSkin(inverseBindMatrices, jointNames, bindShapeMatrix, name, extensions, extras)
 
 type GLTFNode
@@ -357,7 +357,7 @@ type GLTFObject
 end
 GLTFObject(;accessors=Dict{AbstractString, GLTFAccessor}(),
             animations=Dict{AbstractString, GLTFAnimation}(),
-            asset=GLTFAsset(),
+            asset=GLTFAsset(v"0.0.0"),
             buffers=Dict{AbstractString, GLTFBuffer}(),
             bufferViews=Dict{AbstractString, GLTFBufferView}(),
             cameras=Dict{AbstractString, GLTFCamera}(),
@@ -391,8 +391,8 @@ export GLTFAsset
 export GLTFBuffer
 export GLTFBufferView
 export GLTFAccessor
-export GLTFOrthographic
-export GLTFPerspective
+export GLTFCameraOrthographic
+export GLTFCameraPerspective
 export GLTFCamera
 export GLTFProgram
 export GLTFTechniqueParameter
@@ -400,7 +400,7 @@ export GLTFTechniqueStatesFunctions
 export GLTFTechniqueStates
 export GLTFTechnique
 export GLTFMaterial
-export GLTFPrimitive
+export GLTFMeshPrimitive
 export GLTFMesh
 export GLTFSkin
 export GLTFNode

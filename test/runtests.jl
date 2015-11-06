@@ -2,8 +2,39 @@ using GLTF
 using Base.Test
 
 
-function GLTFtest(file::AbstractString)
-    rootDict = JSON.parsefile(file)
+function typestest()
+    anisampler = GLTFAnimationSampler("input", "output")
+    anitarget = GLTFAnimationChannelTarget("id", "path")
+    GLTFAnimationChannel(anisampler, anitarget)
+    GLTFAnimation()
+    GLTFAsset(v"0.0.0")
+    buffer = GLTFBuffer("uri")
+    view = GLTFBufferView(buffer, 0)
+    accessor = GLTFAccessor(view, 0, 0, 0, "type")
+    GLTFCameraOrthographic(0, 0, 0, 0)
+    GLTFCameraPerspective(0, 0, 0)
+    GLTFCamera("type")
+    shader = GLTFShader("uri", 0)
+    program = GLTFProgram(shader, shader)
+    GLTFTechniqueParameter(0)
+    GLTFTechniqueStatesFunctions()
+    GLTFTechniqueStates()
+    GLTFTechnique(program)
+    material = GLTFMaterial()
+    GLTFMeshPrimitive(material)
+    GLTFMesh()
+    GLTFSkin("inverseBindMatrices", ["jointNames"])
+    GLTFNode()
+    GLTFScene()
+    sampler = GLTFSampler()
+    image = GLTFImage("uri")
+    GLTFTexture(sampler, image)
+    GLTFObject()
+    return true
+end
+
+function loaderstest()
+    rootDict = JSON.parsefile("example.gltf")
     println("load rootDict successfully.")
 
     # test animation
@@ -129,4 +160,5 @@ function GLTFtest(file::AbstractString)
     return true
 end
 
-@test GLTFtest("example.gltf")
+@test typestest()
+@test loaderstest()
