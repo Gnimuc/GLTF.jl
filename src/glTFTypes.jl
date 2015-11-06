@@ -334,7 +334,7 @@ GLTFTexture(sampler::GLTFSampler, source::GLTFImage; format=6408, internalFormat
 
 type GLTFObject
     accessors::Dict{AbstractString, GLTFAccessor}
-    animation::Dict{AbstractString, GLTFAnimation}
+    animations::Dict{AbstractString, GLTFAnimation}
     asset::GLTFAsset
     buffers::Dict{AbstractString, GLTFBuffer}
     bufferViews::Dict{AbstractString, GLTFBufferView}
@@ -356,7 +356,7 @@ type GLTFObject
     extras
 end
 GLTFObject(;accessors=Dict{AbstractString, GLTFAccessor}(),
-            animation=Dict{AbstractString, GLTFAnimation}(),
+            animations=Dict{AbstractString, GLTFAnimation}(),
             asset=GLTFAsset(),
             buffers=Dict{AbstractString, GLTFBuffer}(),
             bufferViews=Dict{AbstractString, GLTFBufferView}(),
@@ -375,7 +375,7 @@ GLTFObject(;accessors=Dict{AbstractString, GLTFAccessor}(),
             extensionsUsed=Array{AbstractString, 1}(),
             scene=Nullable{GLTFScene}(),
             extensions=Nullable{Dict}(),
-            extras...) = GLTFObject(accessors, animation, asset, buffers, bufferViews, cameras, images,
+            extras...) = GLTFObject(accessors, animations, asset, buffers, bufferViews, cameras, images,
                                     materials, meshes, nodes, programs, samplers, scenes, shaders, skins,
                                     techniques, textures, extensionsUsed, scene, extensions, extras)
 

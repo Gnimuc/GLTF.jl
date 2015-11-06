@@ -121,6 +121,11 @@ function GLTFtest(file::AbstractString)
     println("loadtexture() checked.")
     GLTF.loadtextures(rootDict)
     println("loadtextures() checked.")
+
+    GLTF.load(rootDict)
+    println("load() checked.")
+
+    println("all tests passed.")
     return true
 end
 

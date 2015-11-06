@@ -603,3 +603,39 @@ function loadtextures(rootDict::Dict{AbstractString, Any})
     end
     return textures
 end
+
+
+
+
+# root object
+function load(rootDict::Dict{AbstractString, Any})
+    accessors = haskey(rootDict, "accessors") ? loadaccessors(rootDict) : Dict{AbstractString, GLTFAccessor}()
+    animations = haskey(rootDict, "animations") ? loadanimations(rootDict) : Dict{AbstractString, GLTFAnimation}()
+    asset = haskey(rootDict, "asset") ? loadasset(rootDict) : GLTFAsset()
+    buffers = haskey(rootDict, "buffers") ? loadbuffers(rootDict) : Dict{AbstractString, GLTFBuffer}()
+    bufferViews = haskey(rootDict, "bufferViews") ? loadbufferviews(rootDict) : Dict{AbstractString, GLTFBufferView}()
+    cameras = haskey(rootDict, "cameras") ? loadcameras(rootDict) : Dict{AbstractString, GLTFCamera}()
+    images = haskey(rootDict, "images") ? loadimages(rootDict) : Dict{AbstractString, GLTFImage}()
+    materials = haskey(rootDict, "materials") ? loadmaterials(rootDict) : Dict{AbstractString, GLTFMaterial}()
+    meshes = haskey(rootDict, "meshes") ? loadmeshes(rootDict) : Dict{AbstractString, GLTFMesh}()
+    nodes = haskey(rootDict, "nodes") ? loadnodes(rootDict) : Dict{AbstractString, GLTFNode}()
+    programs = haskey(rootDict, "programs") ? loadprograms(rootDict) : Dict{AbstractString, GLTFProgram}()
+    samplers = haskey(rootDict, "samplers") ? loadsamplers(rootDict) : Dict{AbstractString, GLTFSampler}()
+    scenes = haskey(rootDict, "scenes") ? loadscenes(rootDict) : Dict{AbstractString, GLTFScene}()
+    shaders = haskey(rootDict, "shaders") ? loadshaders(rootDict) : Dict{AbstractString, GLTFShader}()
+    skins = haskey(rootDict, "skins") ? loadskins(rootDict) : Dict{AbstractString, GLTFSkin}()
+    techniques = haskey(rootDict, "techniques") ? loadtechniques(rootDict) : Dict{AbstractString, GLTFTechnique}()
+    textures = haskey(rootDict, "textures") ? loadtextures(rootDict) : Dict{AbstractString, GLTFTexture}()
+    extensionsUsed = get(rootDict, "extensionsUsed", Array{AbstractString, 1}())
+    if haskey(rootDict, "scene")
+        defaultSceneID = get(rootDict, "scene", nothing)
+        scene = loadscene(defaultSceneID, rootDict)
+    else
+        scene = Nullable{GLTFScene}()
+    end
+    extensions = get(rootDict, "extensions", Nullable{Dict}())
+    extras = get(rootDict, "extras", ())
+    obj = GLTFObject(accessors, animations, asset, buffers, bufferViews, cameras, images,
+                            materials, meshes, nodes, programs, samplers, scenes, shaders, skins,
+                            techniques, textures, extensionsUsed, scene, extensions, extras)
+end
