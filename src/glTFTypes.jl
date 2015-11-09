@@ -1,5 +1,5 @@
 # glTF types
-
+import Base: show
 
 
 # animation
@@ -12,6 +12,13 @@ type GLTFAnimationSampler
 end
 GLTFAnimationSampler(input::AbstractString, output::AbstractString; interpolation="LINEAR",
                      extensions=Nullable{Dict}(), extras...) = GLTFAnimationSampler(input, output, interpolation, extensions, extras)
+function show(io::IO, x::GLTFAnimationSampler)
+    print(io, "GLTFAnimationSampler:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFAnimationChannelTarget
     id::AbstractString
@@ -20,6 +27,13 @@ type GLTFAnimationChannelTarget
     extras
 end
 GLTFAnimationChannelTarget(id::AbstractString, path::AbstractString; extensions=Nullable{Dict}(), extras...) = GLTFAnimationChannelTarget(id, path, extensions, extras)
+function show(io::IO, x::GLTFAnimationChannelTarget)
+    print(io, "GLTFAnimationChannelTarget:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFAnimationChannel
     sampler::GLTFAnimationSampler
@@ -28,6 +42,21 @@ type GLTFAnimationChannel
     extras
 end
 GLTFAnimationChannel(sampler::GLTFAnimationSampler, target::GLTFAnimationChannelTarget; extensions=Nullable{Dict}(), extras...) = GLTFAnimationChannel(sampler, target, extensions, extras)
+function show(io::IO, x::GLTFAnimationChannel)
+    print(io, "GLTFAnimationChannel:")
+    print(io, "\n  sampler: GLTFAnimationSampler")
+    for name in fieldnames(x.sampler)
+        value = eval(:($x.sampler.$name))
+        print(io, "\n    ", name, ": ", value)
+    end
+    print(io, "\n  target: GLTFAnimationChannelTarget")
+    for name in fieldnames(x.target)
+        value = eval(:($x.target.$name))
+        print(io, "\n    ", name, ": ", value)
+    end
+    print(io, "\n  extensions: $(x.extensions)")
+    print(io, "\n  extras: $(x.extras)")
+end
 
 type GLTFAnimation
     channels::Array{GLTFAnimationChannel, 1}
@@ -40,6 +69,15 @@ end
 GLTFAnimation(;channels=GLTFAnimationChannel[], parameters=Dict{AbstractString, AbstractString}(),
               samplers=Dict{AbstractString, GLTFAnimationSampler}(), name=Nullable{AbstractString}(),
               extensions=Nullable{Dict}(), extras...) = GLTFAnimation(channels, parameters, samplers, name, extensions, extras)
+function show(io::IO, x::GLTFAnimation)
+  print(io, "GLTFAnimation:")
+  print(io, "\n  channels", ": ", typeof(x.channels))
+  print(io, "\n  parameters", ": ", x.parameters)
+  print(io, "\n  samplers", ": ", typeof(x.samplers))
+  print(io, "\n  name", ": ", x.name)
+  print(io, "\n  extensions", ": ", x.extensions)
+  print(io, "\n  extras", ": ", x.extras)
+end
 
 
 # asset
@@ -50,6 +88,14 @@ type GLTFProfile
     extras
 end
 GLTFProfile(;api="WebGL", version="1.0.3", extensions=Nullable{Dict}(), extras...) = GLTFProfile(api, version, extensions, extras)
+function show(io::IO, x::GLTFProfile)
+    print(io, "GLTFProfile:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
+
 
 type GLTFAsset
     version::VersionNumber
@@ -63,6 +109,21 @@ end
 GLTFAsset(version; premultipliedAlpha=false, profile=GLTFProfile(),
           copyright=Nullable{AbstractString}(), generator=Nullable{AbstractString}(),
           extensions=Nullable{Dict}(), extras...) = GLTFAsset(version, premultipliedAlpha, profile, copyright, generator, extensions, extras)
+function show(io::IO, x::GLTFAsset)
+  print(io, "GLTFAsset:")
+  for name in fieldnames(x)
+      if name == :profile
+          print(io, "\n  ", name, ": GLTFProfile:")
+          for name in fieldnames(x.profile)
+              value = eval(:($x.profile.$name))
+              print(io, "\n    ", name, ": ", value)
+          end
+      else
+          value = eval(:($x.$name))
+          print(io, "\n  ", name, ": ", value)
+      end
+  end
+end
 
 
 # buffer & bufferView & accessor
