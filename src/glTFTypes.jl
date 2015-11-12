@@ -137,6 +137,13 @@ type GLTFBuffer
 end
 GLTFBuffer(uri::AbstractString; byteLength=0, _type="arraybuffer", name=Nullable{AbstractString}(),
            extensions=Nullable{Dict}(), extras...) = GLTFBuffer(uri, byteLength, _type, name, extensions, extras)
+function show(io::IO, x::GLTFBuffer)
+    print(io, "GLTFBuffer:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFBufferView
     buffer::GLTFBuffer
@@ -149,6 +156,18 @@ type GLTFBufferView
 end
 GLTFBufferView(buffer::GLTFBuffer, byteOffset::Integer; byteLength=0, target=Nullable{Integer}(),
                name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFBufferView(buffer, byteOffset, byteLength, target, name, extensions, extras)
+function show(io::IO, x::GLTFBufferView)
+    print(io, "GLTFBufferView:")
+    print(io, "\n  buffer: GLTFBuffer")
+    for name in fieldnames(x.buffer)
+        value = eval(:($x.buffer.$name))
+        print(io, "\n    ", name, ": ", value)
+    end
+    for name in fieldnames(x)[2:end]
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFAccessor
     bufferView::GLTFBufferView
@@ -166,6 +185,14 @@ end
 GLTFAccessor(bufferView::GLTFBufferView, byteOffset::Integer, componentType::Integer, count::Integer, _type::AbstractString;
              byteStride=0, max=Nullable{Array{Number, 1}}(), min=Nullable{Array{Number, 1}}(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(),
              extras...) = GLTFAccessor(bufferView, byteOffset, componentType, count, _type, byteStride, max, min, name, extensions, extras)
+function show(io::IO, x::GLTFAccessor)
+    print(io, "GLTFAccessor:")
+    print(io, "\n  bufferView: GLTFBufferView...")
+    for name in fieldnames(x)[2:end]
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 
 # camera
@@ -178,6 +205,13 @@ type GLTFCameraOrthographic
     extras
 end
 GLTFCameraOrthographic(xmag::Number, ymag::Number, zfar::Number, znear::Number; extensions=Nullable{Dict}(), extras...) = GLTFCameraOrthographic(xmag, ymag, zfar, znear, extensions, extras)
+function show(io::IO, x::GLTFCameraOrthographic)
+    print(io, "GLTFCameraOrthographic:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFCameraPerspective
     yfov::Number
@@ -189,6 +223,13 @@ type GLTFCameraPerspective
 end
 GLTFCameraPerspective(yfov::Number, zfar::Number, znear::Number; aspectRatio=Nullable{Number}(),
                 extensions=Nullable{Dict}(), extras...) = GLTFCameraPerspective(yfov, zfar, znear, aspectRatio, extensions, extras)
+function show(io::IO, x::GLTFCameraPerspective)
+    print(io, "GLTFCameraPerspective:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFCamera
     _type::AbstractString
@@ -200,6 +241,27 @@ type GLTFCamera
 end
 GLTFCamera(_type::AbstractString; orthographic=Nullable{GLTFCameraOrthographic}(), perspective=Nullable{GLTFCameraPerspective}(),
            name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFCamera(_type, orthographic, perspective, name, extensions, extras)
+function show(io::IO, x::GLTFCamera)
+    print(io, "GLTFCamera:")
+    print(io, "\n  type: ", x._type)
+    if !isnull(x.orthographic)
+        print(io, "\n  orthographic: Nullable(GLTFCameraOrthographic)")
+        for name in fieldnames(x.orthographic.value)
+            value = eval(:($x.orthographic.value.$name))
+            print(io, "\n    ", name, ": ", value)
+        end
+    end
+    if !isnull(x.perspective)
+        print(io, "\n  perspective: Nullable(GLTFCameraPerspective)")
+        for name in fieldnames(x.perspective.value)
+            value = eval(:($x.perspective.value.$name))
+            print(io, "\n    ", name, ": ", value)
+        end
+    end
+    print(io, "\n  name: $(x.name)")
+    print(io, "\n  extensions: $(x.extensions)")
+    print(io, "\n  extras: $(x.extras)")
+end
 
 
 # shader & program & technique & material
@@ -211,6 +273,16 @@ type GLTFShader
     extras
 end
 GLTFShader(uri::AbstractString, _type::Integer; name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFShader(uri, _type, name, extensions, extras)
+function show(io::IO, x::GLTFShader)
+    print(io, "GLTFShader:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        if name == :_type
+            name = "type"
+        end
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFProgram
     fragmentShader::GLTFShader
@@ -222,6 +294,29 @@ type GLTFProgram
 end
 GLTFProgram(fragmentShader::GLTFShader, vertexShader::GLTFShader; attributes=AbstractString[],
             name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFProgram(fragmentShader, vertexShader, attributes, name, extensions, extras)
+function show(io::IO, x::GLTFProgram)
+    print(io, "GLTFProgram:")
+    print(io, "\n  fragmentShader: GLTFShader")
+    for name in fieldnames(x.fragmentShader)
+        value = eval(:($x.fragmentShader.$name))
+        if name == :_type
+            name = "type"
+        end
+        print(io, "\n    ", name, ": ", value)
+    end
+    print(io, "\n  vertexShader: GLTFShader")
+    for name in fieldnames(x.vertexShader)
+        value = eval(:($x.vertexShader.$name))
+        if name == :_type
+            name = "type"
+        end
+        print(io, "\n    ", name, ": ", value)
+    end
+    print(io, "\n  attributes: $(x.attributes)")
+    print(io, "\n  name: $(x.name)")
+    print(io, "\n  extensions: $(x.extensions)")
+    print(io, "\n  extras: $(x.extras)")
+end
 
 # type GLTFTechniqueParameter{T<:Union{Number, Bool, AbstractString, Array{Number, 1}, Array{Bool, 1}, Array{AbstractString, 1}}}
 type GLTFTechniqueParameter
@@ -236,6 +331,14 @@ type GLTFTechniqueParameter
 end
 GLTFTechniqueParameter(_type::Integer; count=Nullable{Integer}(), node=Nullable{AbstractString}(), semantic=Nullable{AbstractString}(), value=Nullable{Bool}(),
                        extensions=Nullable{Dict}(), extras...) = GLTFTechniqueParameter(_type, count, node, semantic, value, extensions, extras)
+function show(io::IO, x::GLTFTechniqueParameter)
+    print(io, "GLTFTechniqueParameter:")
+    print(io, "\n  type: ", x._type)
+    for name in fieldnames(x)[2:end]
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFTechniqueStatesFunctions
     blendColor
@@ -259,6 +362,13 @@ GLTFTechniqueStatesFunctions(;blendColor=[0, 0, 0, 0], blendEquationSeparate=[32
               frontFace=[2305], lineWidth=[1], polygonOffset=[0, 0], scissor=[0, 0, 0, 0],
               extensions=Nullable{Dict}(), extras...) = GLTFTechniqueStatesFunctions(blendColor, blendEquationSeparate, blendFuncSeparate, colorMask, cullFace, depthFunc,
                                                                                      depthMask, depthRange, frontFace, lineWidth, polygonOffset, scissor, extensions, extras)
+function show(io::IO, x::GLTFTechniqueStatesFunctions)
+    print(io, "GLTFTechniqueStatesFunctions:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFTechniqueStates
     enable::Array{Integer, 1}
@@ -267,6 +377,13 @@ type GLTFTechniqueStates
     extras
 end
 GLTFTechniqueStates(;enable=Integer[], functions=Nullable{GLTFTechniqueStatesFunctions}(), extensions=Nullable{Dict}(), extras...) = GLTFTechniqueStates(enable, functions, extensions, extras)
+function show(io::IO, x::GLTFTechniqueStates)
+    print(io, "GLTFTechniqueStates:")
+    print(io, "\n  enable: $(x.enable)")
+    print(io, "\n  functions: Nullable{GLTFTechniqueStatesFunctions}...")
+    print(io, "\n  extensions: $(x.extensions)")
+    print(io, "\n  extras: $(x.extras)")
+end
 
 type GLTFTechnique
     program::GLTFProgram
@@ -281,6 +398,19 @@ end
 GLTFTechnique(program::GLTFProgram; parameters=Dict{AbstractString, GLTFTechniqueParameter}(), attributes=Dict{AbstractString, AbstractString}(),
               uniforms=Dict{AbstractString, AbstractString}(), states=GLTFTechniqueStates(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(),
               extras...) = GLTFTechnique(program, parameters, attributes, uniforms, states, name, extensions, extras)
+function show(io::IO, x::GLTFTechnique)
+    print(io, "GLTFTechnique:")
+    for name in fieldnames(x)
+        if name == :program
+            print(io, "\n  program: GLTFProgram...")
+        elseif name == :states
+            print(io, "\n  states: GLTFTechniqueStates...")
+        else
+            value = eval(:($x.$name))
+            print(io, "\n  ", name, ": ", value)
+        end
+    end
+end
 
 # type GLTFMaterial{T<:Union{Number, Bool, AbstractString, Array{Number, 1}, Array{Bool, 1}, Array{AbstractString, 1}}}
 type GLTFMaterial
@@ -292,7 +422,14 @@ type GLTFMaterial
 end
 GLTFMaterial(;values=Dict{AbstractString, Any}(), technique=Nullable{GLTFTechnique}(),
              name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFMaterial(values, technique, name, extensions, extras)
-
+function show(io::IO, x::GLTFMaterial)
+    print(io, "GLTFMaterial:")
+    print(io, "\n  values: $(x.values)")
+    print(io, "\n  technique: Nullable(GLTFTechnique)...")
+    print(io, "\n  name: $(x.name)")
+    print(io, "\n  extensions: $(x.extensions)")
+    print(io, "\n  extras: $(x.extras)")
+end
 
 # mesh
 type GLTFMeshPrimitive
@@ -305,6 +442,14 @@ type GLTFMeshPrimitive
 end
 GLTFMeshPrimitive(material::GLTFMaterial; attributes=Dict{AbstractString, AbstractString}(), mode=4,
               indices=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFMeshPrimitive(material, attributes, mode, indices, extensions, extras)
+function show(io::IO, x::GLTFMeshPrimitive)
+    print(io, "GLTFMeshPrimitive:")
+    print(io, "\n  material: GLTFMaterial...")
+    for name in fieldnames(x)[2:end]
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFMesh
     primitives::Array{GLTFMeshPrimitive, 1}
@@ -313,7 +458,13 @@ type GLTFMesh
     extras
 end
 GLTFMesh(;primitives=GLTFMeshPrimitive[], name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFMesh(primitives, name, extensions, extras)
-
+function show(io::IO, x::GLTFMesh)
+    print(io, "GLTFMesh:")
+    print(io, "\n  primitives", ": ", typeof(x.primitives))
+    print(io, "\n  name: $(x.name)")
+    print(io, "\n  extensions: $(x.extensions)")
+    print(io, "\n  extras: $(x.extras)")
+end
 
 # skin & node & scene
 type GLTFSkin{T<:AbstractString}
@@ -326,6 +477,13 @@ type GLTFSkin{T<:AbstractString}
 end
 GLTFSkin{T<:AbstractString}(inverseBindMatrices::AbstractString, jointNames::Array{T, 1}; bindShapeMatrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
          name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFSkin(inverseBindMatrices, jointNames, bindShapeMatrix, name, extensions, extras)
+function show(io::IO, x::GLTFSkin)
+    print(io, "GLTFSkin:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFNode
     children::Array{AbstractString, 1}
@@ -347,6 +505,13 @@ GLTFNode(;children=AbstractString[], matrix=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1], r
          skin=Nullable{GLTFSkin}(), jointName=Nullable{AbstractString}(), meshes=Nullable{Dict{AbstractString, GLTFMesh}}(),
          name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFNode(children, matrix, rotation, scale, translation, camera,
                                                                                              skeletons, skin, jointName, meshes, name, extensions, extras)
+function show(io::IO, x::GLTFNode)
+    print(io, "GLTFNode:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFScene
     nodes::Dict{AbstractString, GLTFNode}
@@ -355,6 +520,13 @@ type GLTFScene
     extras
 end
 GLTFScene(;nodes=Dict{AbstractString, GLTFNode}(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFScene(nodes, name, extensions, extras)
+function show(io::IO, x::GLTFScene)
+    print(io, "GLTFScene:")
+    print(io, "\n  nodes", ": ", typeof(x.nodes))
+    print(io, "\n  name: $(x.name)")
+    print(io, "\n  extensions: $(x.extensions)")
+    print(io, "\n  extras: $(x.extras)")
+end
 
 
 # sampler & image & texture
@@ -369,6 +541,13 @@ type GLTFSampler
 end
 GLTFSampler(;magFilter=9729, minFilter=9729, wrapS=10497, wrapT=10497, name=Nullable{AbstractString}(),
             extensions=Nullable{Dict}(), extras...) = GLTFSampler(magFilter, minFilter, wrapS, wrapT, name, extensions, extras)
+function show(io::IO, x::GLTFSampler)
+    print(io, "GLTFSampler:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFImage
     uri::AbstractString
@@ -377,6 +556,13 @@ type GLTFImage
     extras
 end
 GLTFImage(uri::AbstractString; name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFImage(uri, name, extensions, extras)
+function show(io::IO, x::GLTFImage)
+    print(io, "GLTFImage:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFTexture
     sampler::GLTFSampler
@@ -391,7 +577,23 @@ type GLTFTexture
 end
 GLTFTexture(sampler::GLTFSampler, source::GLTFImage; format=6408, internalFormat=6408, target=3553, _type=5121,
             name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFTexture(sampler, source, format, internalFormat, target, _type, name, extensions, extras)
-
+function show(io::IO, x::GLTFTexture)
+    print(io, "GLTFTexture:")
+    print(io, "\n  sampler: GLTFSampler")
+    for name in fieldnames(x.sampler)
+        value = eval(:($x.sampler.$name))
+        print(io, "\n    ", name, ": ", value)
+    end
+    print(io, "\n  source: GLTFImage")
+    for name in fieldnames(x.source)
+        value = eval(:($x.source.$name))
+        print(io, "\n    ", name, ": ", value)
+    end
+    for name in fieldnames(x)[3:end]
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", value)
+    end
+end
 
 type GLTFObject
     accessors::Dict{AbstractString, GLTFAccessor}
@@ -439,6 +641,13 @@ GLTFObject(;accessors=Dict{AbstractString, GLTFAccessor}(),
             extras...) = GLTFObject(accessors, animations, asset, buffers, bufferViews, cameras, images,
                                     materials, meshes, nodes, programs, samplers, scenes, shaders, skins,
                                     techniques, textures, extensionsUsed, scene, extensions, extras)
+function show(io::IO, x::GLTFObject)
+    print(io, "GLTFObject:")
+    for name in fieldnames(x)
+        value = eval(:($x.$name))
+        print(io, "\n  ", name, ": ", typeof(value))
+    end
+end
 
 
 
