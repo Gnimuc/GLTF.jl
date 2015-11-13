@@ -31,7 +31,10 @@ GLTFBufferView:
 Note that, the corresponding `buffer` has already been nested in the `bufferView` object, not just its `id`(a not so much helpful string).
 
 ## Use Cases
-My specific use case is to load partial of a big glTF file, e.g. a buffer view object or a texture object. Currently, this package also provides some "God-loaders" such as `GLTF.load()`, `GLTF.loadscene()` and `GLTF.loadnode()`. I highly recommend to avoid using those loaders, because they are very slow and not well implemented.
+My particular use case is to load partial of a big glTF file, e.g. a buffer view object or a texture object. Currently, this package also provides some "God-loaders" such as `GLTF.load()`, `GLTF.loadscene()` and `GLTF.loadnode()`. I highly recommend to avoid using those loaders, because they are very slow and not well implemented.
+
+## TODO List
+- [ ] make this package compatible with [ModernGL.jl](https://github.com/JuliaGL/ModernGL.jl)
 
 ## License
 MIT except one test file: `example.gltf` which is released under [BSD](https://github.com/KhronosGroup/glTF/blob/9c7dbd3bf4eea36cc91638d441a7c7b059af6417/LICENSE.md).
