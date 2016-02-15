@@ -1,4 +1,4 @@
-using GLTF
+using GLTF, ModernGL
 using Base.Test
 
 
@@ -10,7 +10,7 @@ function typestest()
     GLTFAsset(v"0.0.0")
     buffer = GLTFBuffer("uri")
     view = GLTFBufferView(buffer, 0)
-    accessor = GLTFAccessor(view, 0, 0, 0, "type")
+    accessor = GLTFAccessor(view, 0, GL_VERTEX_SHADER, 0, "type")
     GLTFCameraOrthographic(0, 0, 0, 0)
     GLTFCameraPerspective(0, 0, 0)
     GLTFCamera("type")

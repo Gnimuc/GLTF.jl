@@ -1,6 +1,6 @@
 module GLTF
 
-import JSON
+using JSON, ModernGL
 
 include("glTFTypes.jl")
 include("glTFLoader.jl")

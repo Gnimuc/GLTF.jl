@@ -149,12 +149,12 @@ type GLTFBufferView
     buffer::GLTFBuffer
     byteOffset::Integer
     byteLength::Integer
-    target::Nullable{Integer}
+    target::Nullable{GLenum}
     name::Nullable{AbstractString}
     extensions::Nullable{Dict}
     extras
 end
-GLTFBufferView(buffer::GLTFBuffer, byteOffset::Integer; byteLength=0, target=Nullable{Integer}(),
+GLTFBufferView(buffer::GLTFBuffer, byteOffset::Integer; byteLength=0, target=Nullable{GLenum}(),
                name=Nullable{AbstractString}(), extensions=Nullable{Dict}(), extras...) = GLTFBufferView(buffer, byteOffset, byteLength, target, name, extensions, extras)
 function show(io::IO, x::GLTFBufferView)
     print(io, "GLTFBufferView:")
@@ -172,7 +172,7 @@ end
 type GLTFAccessor
     bufferView::GLTFBufferView
     byteOffset::Integer
-    componentType::Integer
+    componentType::GLenum
     count::Integer
     _type::AbstractString
     byteStride::Integer
@@ -182,7 +182,7 @@ type GLTFAccessor
     extensions::Nullable{Dict}
     extras
 end
-GLTFAccessor(bufferView::GLTFBufferView, byteOffset::Integer, componentType::Integer, count::Integer, _type::AbstractString;
+GLTFAccessor(bufferView::GLTFBufferView, byteOffset::Integer, componentType::GLenum, count::Integer, _type::AbstractString;
              byteStride=0, max=Nullable{Array{Number, 1}}(), min=Nullable{Array{Number, 1}}(), name=Nullable{AbstractString}(), extensions=Nullable{Dict}(),
              extras...) = GLTFAccessor(bufferView, byteOffset, componentType, count, _type, byteStride, max, min, name, extensions, extras)
 function show(io::IO, x::GLTFAccessor)

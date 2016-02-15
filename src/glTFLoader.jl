@@ -132,7 +132,10 @@ function loadbufferview(viewID::AbstractString, rootDict::Dict{AbstractString, A
     @assert haskey(viewDict, "byteOffset") "not a valid bufferView obj: cannot access property byteOffset."
     byteOffset = get(viewDict, "byteOffset", nothing)
     byteLength = get(viewDict, "byteLength", 0)
-    target = get(viewDict, "target", Nullable{Integer}())
+    target = get(viewDict, "target", Nullable{GLenum}())
+    if target != Nullable{GLenum}()
+        target = GLenum(target)
+    end
     name = get(viewDict, "name", Nullable{AbstractString}())
     extensions = get(viewDict, "extensions", Nullable{Dict}())
     extras = get(viewDict, "extras", ())
@@ -157,7 +160,7 @@ function loadaccessor(accessorID::AbstractString, rootDict::Dict{AbstractString,
     @assert haskey(accessorDict, "byteOffset") "not a valid accessor obj: cannot access property byteOffset."
     byteOffset = get(accessorDict, "byteOffset", nothing)
     @assert haskey(accessorDict, "componentType") "not a valid accessor obj: cannot access property componentType."
-    componentType = get(accessorDict, "componentType", nothing)
+    componentType = GLenum(get(accessorDict, "componentType", nothing))
     @assert haskey(accessorDict, "byteOffset") "not a valid accessor obj: cannot access property count."
     count = get(accessorDict, "count", nothing)
     @assert haskey(accessorDict, "byteOffset") "not a valid accessor obj: cannot access property type."
