@@ -1,8 +1,5 @@
 module GLTF
 
-using JSON, ModernGL
-
-include("glTFTypes.jl")
-include("glTFLoader.jl")
+include("macros/typegen.jl")
 
 end # module
