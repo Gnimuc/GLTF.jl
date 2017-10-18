@@ -1,0 +1,50 @@
+{
+  "items restriction": [
+    {
+      "case": "single",
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    {
+      "case": "many",
+      "type": "array",
+      "items": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "case": "nested",
+      "type": "array",
+      "items": {
+        "type": "array",
+            "items": {
+                "type": "integer"
+            }
+      }
+    },
+    {
+      "name": "object",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    {
+      "name": "ref",
+      "type": "array",
+      "items": {
+        "$ref": "asset.schema.json"
+      }
+    }
+  ]
+}
