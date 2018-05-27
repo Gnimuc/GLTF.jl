@@ -1,0 +1,6 @@
+name = "GLTF"
+uuid = "0844153c-61bc-11e8-1c77-7ba283568cc4"
+version = "0.0.1"
+authors = ["Gnimuc <qiyupei@gmail.com>"]
+
+[deps]
