@@ -1,6 +1,7 @@
+authors = ["Gnimuc <qiyupei@gmail.com>"]
 name = "GLTF"
 uuid = "0844153c-61bc-11e8-1c77-7ba283568cc4"
 version = "0.0.1"
-authors = ["Gnimuc <qiyupei@gmail.com>"]
 
 [deps]
+JSON2 = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
