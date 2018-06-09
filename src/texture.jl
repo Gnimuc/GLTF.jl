@@ -1,20 +1,20 @@
 mutable struct Texture
-    sampler::Int
-    source::Int
-    name::String
+    sampler::Union{Nothing,Int}
+    source::Union{Nothing,Int}
+    name::Union{Nothing,String}
     extensions::Dict
     extras
-    function Texture(; sampler=-1, source=-1, name="", extensions=Dict(), extras=nothing)
+    function Texture(; sampler=nothing, source=nothing, name=nothing, extensions=Dict(), extras=nothing)
         obj = new()
-        if sampler != -1
+        if sampler != nothing
             sampler ≥ 0 || throw(ArgumentError("the index of the sampler used by this texture should be ≥ 0"))
             obj.sampler = sampler
         end
-        if source != -1
+        if source != nothing
             source ≥ 0 || throw(ArgumentError("the index of the image used by this texture should be ≥ 0"))
             obj.source = source
         end
-        name == "" || (obj.name = name;)
+        name == nothing || (obj.name = name;)
         isempty(extensions) || (obj.extensions = extensions;)
         extras == nothing || (obj.extras = extras;)
         obj

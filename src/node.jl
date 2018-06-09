@@ -1,20 +1,20 @@
 mutable struct Node
-    camera::Int
+    camera::Union{Nothing,Int}
     children::Set{Int}
-    skin::Int
+    skin::Union{Nothing,Int}
     matrix::Vector{Int}
-    mesh::Int
+    mesh::Union{Nothing,Int}
     rotation::Vector{Cfloat}
     scale::Vector{Cfloat}
     translation::Vector{Cfloat}
     weights::Vector{Cfloat}
-    name::String
+    name::Union{Nothing,String}
     extensions::Dict
     extras
-    function Node(; camera=-1, children=Set(), skin=-1, matrix=[], mesh=-1, rotation=[], scale=[],
-                    translation=[], weights=[], name="", extensions=Dict(), extras=nothing)
+    function Node(; camera=nothing, children=Set(), skin=nothing, matrix=[], mesh=nothing, rotation=[],
+                    scale=[], translation=[], weights=[], name=nothing, extensions=Dict(), extras=nothing)
         obj = new()
-        if camera != -1
+        if camera != nothing
             camera ≥ 0 || throw(ArgumentError("the index of the camera referenced by this node should be ≥ 0"))
             obj.camera = camera
         end
@@ -22,7 +22,7 @@ mutable struct Node
             all(c ≥ 0 for c in children) || throw(ArgumentError("the indices of this node's children should be ≥ 0"))
             obj.children = children
         end
-        if skin != -1
+        if skin != nothing
             skin ≥ 0 || throw(ArgumentError("the index of the skin referenced by this node should be ≥ 0"))
             obj.skin = skin
         end
@@ -30,7 +30,7 @@ mutable struct Node
             length(matrix) == 16 || throw(ArgumentError("the length of transformation matrix should be exactly 16"))
             obj.matrix = matrix
         end
-        if mesh != -1
+        if mesh != nothing
             mesh ≥ 0 || throw(ArgumentError("the index of the mesh in this node should be ≥ 0"))
             obj.mesh = mesh
         end
@@ -47,7 +47,7 @@ mutable struct Node
             obj.translation = translation
         end
         isempty(weights) || (obj.weights = weights;)
-        name == "" || (obj.name = name;)
+        name == nothing || (obj.name = name;)
         isempty(extensions) || (obj.extensions = extensions;)
         extras == nothing || (obj.extras = extras;)
         obj
@@ -57,11 +57,11 @@ JSON2.@format Node keywordargs begin
     camera => (omitempty=true,)
     children => (omitempty=true,)
     skin => (omitempty=true,)
-    matrix => (omitempty=true, default=[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1])
+    matrix => (omitempty=true,)
     mesh => (omitempty=true,)
-    rotation => (omitempty=true, default=[0,0,0,1])
-    scale => (omitempty=true, default=[1,1,1])
-    translation => (omitempty=true, default=[0,0,0])
+    rotation => (omitempty=true,)
+    scale => (omitempty=true,)
+    translation => (omitempty=true,)
     weights => (omitempty=true,)
     name => (omitempty=true,)
     extensions => (omitempty=true,)

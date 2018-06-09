@@ -1,24 +1,21 @@
 mutable struct Asset
-    copyright::String
-    generator::String
+    copyright::Union{Nothing,String}
+    generator::Union{Nothing,String}
     version::String
-    minVersion::String
+    minVersion::Union{Nothing,String}
     extensions::Dict
     extras
-    function Asset(version; copyright="", generator="", minVersion="", extensions=Dict(), extras=nothing)
+    function Asset(; version, copyright=nothing, generator=nothing, minVersion=nothing, extensions=Dict(), extras=nothing)
         obj = new()
-        version == "" && throw(ArgumentError("glTF version is missing"))
         obj.version = version
-        copyright == "" || (obj.copyright = copyright;)
-        generator == "" || (obj.generator = generator;)
-        minVersion == "" || (obj.minVersion = minVersion;)
+        copyright == nothing || (obj.copyright = copyright;)
+        generator == nothing || (obj.generator = generator;)
+        minVersion == nothing || (obj.minVersion = minVersion;)
         isempty(extensions) || (obj.extensions = extensions;)
         extras == nothing || (obj.extras = extras;)
         obj
     end
 end
-Asset(; copyright="", generator="", version="", minVersion="", extensions=Dict(),
-    extras=nothing) = Asset(version, copyright=copyright, generator=generator, minVersion=minVersion, extensions=extensions, extras=extras)
 JSON2.@format Asset keywordargs begin
     copyright => (omitempty=true,)
     generator => (omitempty=true,)

@@ -1,13 +1,13 @@
 mutable struct TextureInfo
     index::Int
-    texCoord::Int
+    texCoord::Union{Nothing,Int}
     extensions::Dict
     extras
-    function TextureInfo(index; texCoord=-1, extensions=Dict(), extras=nothing)
+    function TextureInfo(; index, texCoord=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         index ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
         obj.index = index
-        if texCoord != -1
+        if texCoord != nothing
             texCoord ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
             obj.texCoord = texCoord
         end
@@ -16,9 +16,8 @@ mutable struct TextureInfo
         obj
     end
 end
-TextureInfo(; index=-1, texCoord=-1, extensions=Dict(), extras=nothing) = TextureInfo(index, texCoord=texCoord, extensions=extensions, extras=extras)
 JSON2.@format TextureInfo keywordargs begin
-    texCoord => (omitempty=true, default=0)
+    texCoord => (omitempty=true,)
     extensions => (omitempty=true,)
     extras => (omitempty=true,)
 end
@@ -26,29 +25,27 @@ end
 
 mutable struct NormalTextureInfo
     index::Int
-    texCoord::Int
-    scale::Cfloat
+    texCoord::Union{Nothing,Int}
+    scale::Union{Nothing,Cfloat}
     extensions::Dict
     extras
-    function NornalTextureInfo(index; texCoord=-1, scale=Cfloat(NaN), extensions=Dict(), extras=nothing)
+    function NornalTextureInfo(; index, texCoord=nothing, scale=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         index ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
         obj.index = index
-        if texCoord != -1
+        if texCoord != nothing
             texCoord ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
             obj.texCoord = texCoord
         end
-        isnan(scale) || (obj.scale = scale;)
+        scale == nothing || (obj.scale = scale;)
         isempty(extensions) || (obj.extensions = extensions;)
         extras == nothing || (obj.extras = extras;)
         obj
     end
 end
-NornalTextureInfo(; index=-1, texCoord=-1, scale=Cfloat(NaN), extensions=Dict(),
-    extras=nothing) = NormalTextureInfo(index, texCoord=texCoord, scale=scale, extensions=extensions, extras=extras)
 JSON2.@format NormalTextureInfo keywordargs begin
-    texCoord => (omitempty=true, default=0)
-    scale => (omitempty=true, default=1)
+    texCoord => (omitempty=true,)
+    scale => (omitempty=true,)
     extensions => (omitempty=true,)
     extras => (omitempty=true,)
 end
@@ -56,19 +53,19 @@ end
 
 mutable struct OcclusionTextureInfo
     index::Int
-    texCoord::Int
-    strength::Cfloat
+    texCoord::Union{Nothing,Int}
+    strength::Union{Nothing,Cfloat}
     extensions::Dict
     extras
-    function OcclusionTextureInfo(index; texCoord=-1, strength=Cfloat(NaN), extensions=Dict(), extras=nothing)
+    function OcclusionTextureInfo(; index, texCoord=nothing, strength=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         index ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
         obj.index = index
-        if texCoord != -1
+        if texCoord != nothing
             texCoord ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
             obj.texCoord = texCoord
         end
-        if !isnan(strength)
+        if strength != nothing
             0 ≤ strength ≤ 1 || throw(ArgumentError("strength should be should be ≥ 0 and ≤ 1"))
             obj.strength = strength
         end
@@ -77,11 +74,9 @@ mutable struct OcclusionTextureInfo
         obj
     end
 end
-OcclusionTextureInfo(; index=-1, texCoord=-1, strength=Cfloat(NaN), extensions=Dict(),
-    extras=nothing) = OcclusionTextureInfo(index, texCoord=texCoord, strength=strength, extensions=extensions, extras=extras)
 JSON2.@format OcclusionTextureInfo keywordargs begin
-    texCoord => (omitempty=true, default=0)
-    scale => (omitempty=true, default=1)
+    texCoord => (omitempty=true,)
+    scale => (omitempty=true,)
     extensions => (omitempty=true,)
     extras => (omitempty=true,)
 end
@@ -90,14 +85,13 @@ end
 mutable struct PBRMetallicRoughness
     baseColorFactor::Vector{Cfloat}
     baseColorTexture::Union{Nothing,TextureInfo}
-    metallicFactor::Cfloat
-    roughnessFactor::Cfloat
+    metallicFactor::Union{Nothing,Cfloat}
+    roughnessFactor::Union{Nothing,Cfloat}
     metallicRoughnessTexture::Union{Nothing,TextureInfo}
     extensions::Dict
     extras
-    function PBRMetallicRoughness(; baseColorFactor=[], baseColorTexture=nothing,
-                                    metallicFactor=Cfloat(NaN), roughnessFactor=Cfloat(NaN),
-                                    metallicRoughnessTexture=nothing, extensions=Dict(), extras=nothing)
+    function PBRMetallicRoughness(; baseColorFactor=[], baseColorTexture=nothing, metallicFactor=nothing,
+                                    roughnessFactor=nothing, metallicRoughnessTexture=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         if !isempty(baseColorFactor)
             length(baseColorFactor) == 4 || throw(ArgumentError("the material's base color factor should exactly contain 4 values(RGBA)"))
@@ -105,11 +99,11 @@ mutable struct PBRMetallicRoughness
             obj.baseColorFactor = baseColorFactor
         end
         baseColorTexture != nothing && (obj.baseColorTexture = baseColorTexture;)
-        if !isnan(metallicFactor)
+        if metallicFactor != nothing
             0 ≤ metallicFactor ≤ 1 || throw(ArgumentError("the metalness of the material factor should ≥ 0 and ≤ 1"))
             obj.metallicFactor = metallicFactor
         end
-        if !isnan(roughnessFactor)
+        if roughnessFactor != nothing
             0 ≤ roughnessFactor ≤ 1 || throw(ArgumentError("the roughness of the material factor should ≥ 0 and ≤ 1"))
             obj.roughnessFactor = roughnessFactor
         end
@@ -120,10 +114,10 @@ mutable struct PBRMetallicRoughness
     end
 end
 JSON2.@format PBRMetallicRoughness keywordargs begin
-    baseColorFactor => (omitempty=true, default=[1,1,1,1])
+    baseColorFactor => (omitempty=true,)
     baseColorTexture => (omitempty=true,)
-    metallicFactor => (omitempty=true, default=1)
-    roughnessFactor => (omitempty=true, default=1)
+    metallicFactor => (omitempty=true,)
+    roughnessFactor => (omitempty=true,)
     metallicRoughnessTexture => (omitempty=true,)
     extensions => (omitempty=true,)
     extras => (omitempty=true,)
@@ -138,12 +132,12 @@ mutable struct Material
     emissiveFactor::Vector{Cfloat}
     alphaMode::String
     alphaCutoff::Cfloat
-    doubleSided::Bool
+    doubleSided::Union{Nothing,Bool}
     name::String
     extensions::Dict
     extras
     function Material(; pbrMetallicRoughness=nothing, normalTexture=nothing, occlusionTexture=nothing, emissiveTexture=nothing,
-        emissiveFactor=[], alphaMode="", alphaCutoff=Cfloat(NaN), doubleSided=false, name="", extensions=Dict(), extras=nothing)
+        emissiveFactor=[], alphaMode="", alphaCutoff=Cfloat(NaN), doubleSided=nothing, name="", extensions=Dict(), extras=nothing)
         obj = new()
         pbrMetallicRoughness != nothing && (obj.pbrMetallicRoughness = pbrMetallicRoughness;)
         normalTexture == nothing && (obj.normalTexture = normalTexture;)
@@ -164,7 +158,7 @@ mutable struct Material
             alphaCutoff ≥ 0 || throw(ArgumentError("alphaCutoff should be ≥ 0"))
             obj.alphaCutoff = alphaCutoff
         end
-        doubleSided == false || (obj.doubleSided = doubleSided;)
+        doubleSided == nothing || (obj.doubleSided = doubleSided;)
         name == "" || (obj.name = name;)
         isempty(extensions) || (obj.extensions = extensions;)
         extras == nothing || (obj.extras = extras;)
@@ -176,10 +170,10 @@ JSON2.@format Material keywordargs begin
     normalTexture => (omitempty=true,)
     occlusionTexture => (omitempty=true,)
     emissiveTexture => (omitempty=true,)
-    emissiveFactor => (omitempty=true, default=[0,0,0])
-    alphaMode => (omitempty=true, default="OPAQUE")
-    alphaCutoff => (omitempty=true, default=0.5)
-    doubleSided => (omitempty=true, default=false)
+    emissiveFactor => (omitempty=true,)
+    alphaMode => (omitempty=true,)
+    alphaCutoff => (omitempty=true,)
+    doubleSided => (omitempty=true,)
     name => (omitempty=true,)
     extensions => (omitempty=true,)
     extras => (omitempty=true,)

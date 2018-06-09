@@ -1,22 +1,20 @@
 mutable struct Buffer
-    uri::String
+    uri::Union{Nothing,String}
     byteLength::Int
-    name::String
+    name::Union{Nothing,String}
     extensions::Dict
     extras
-    function Buffer(byteLength; uri="", name="", extensions=Dict(), extras=nothing)
+    function Buffer(; byteLength, uri=nothing, name=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         byteLength ≥ 1 || throw(ArgumentError("byteLength should be ≥ 1"))
         obj.byteLength = byteLength
-        uri == "" || (obj.uri = uri;)
-        name == "" || (obj.name = name;)
+        uri == nothing || (obj.uri = uri;)
+        name == nothing || (obj.name = name;)
         isempty(extensions) || (obj.extensions = extensions;)
         extras == nothing || (obj.extras = extras;)
         obj
     end
 end
-Buffer(; uri="", byteLength=1, name="", extensions=Dict(),
-    extras=nothing) = Buffer(byteLength, uri=uri, name=name, extensions=extensions, extras=extras)
 JSON2.@format Buffer keywordargs begin
     uri => (omitempty=true,)
     name => (omitempty=true,)
