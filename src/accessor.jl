@@ -88,8 +88,8 @@ mutable struct Accessor
     name::Union{Nothing,String}
     extensions::Dict
     extras
-    function Accessor(; componentType, count, _type, bufferView=nothing, byteOffset=nothing, normalized=nothing,
-                      max=[], min=[], sparse=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    function Accessor(; componentType, count, _type, bufferView=nothing, byteOffset=nothing,
+        normalized=nothing, max=[], min=[], sparse=nothing, name=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         componentType == BYTE ||
         componentType == UNSIGNED_BYTE ||

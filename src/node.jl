@@ -11,8 +11,8 @@ mutable struct Node
     name::Union{Nothing,String}
     extensions::Dict
     extras
-    function Node(; camera=nothing, children=Set(), skin=nothing, matrix=[], mesh=nothing, rotation=[],
-                    scale=[], translation=[], weights=[], name=nothing, extensions=Dict(), extras=nothing)
+    function Node(; camera=nothing, children=Set(), skin=nothing, matrix=[], mesh=nothing,
+        rotation=[], scale=[], translation=[], weights=[], name=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         if camera != nothing
             camera ≥ 0 || throw(ArgumentError("the index of the camera referenced by this node should be ≥ 0"))

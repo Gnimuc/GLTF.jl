@@ -6,8 +6,7 @@ mutable struct Primitive
     targets::Vector{Dict}
     extensions::Dict
     extras
-    function Primitive(; attributes, indices=nothing, material=nothing, mode=nothing,
-                         targets=[], extensions=Dict(), extras=nothing)
+    function Primitive(; attributes, indices=nothing, material=nothing, mode=nothing, targets=[], extensions=Dict(), extras=nothing)
         obj = new()
         isempty(attributes) && throw(ArgumentError("attributes should not be empty"))
         obj.attributes = attributes

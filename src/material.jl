@@ -91,7 +91,7 @@ mutable struct PBRMetallicRoughness
     extensions::Dict
     extras
     function PBRMetallicRoughness(; baseColorFactor=[], baseColorTexture=nothing, metallicFactor=nothing,
-                                    roughnessFactor=nothing, metallicRoughnessTexture=nothing, extensions=Dict(), extras=nothing)
+        roughnessFactor=nothing, metallicRoughnessTexture=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         if !isempty(baseColorFactor)
             length(baseColorFactor) == 4 || throw(ArgumentError("the material's base color factor should exactly contain 4 values(RGBA)"))
@@ -130,14 +130,14 @@ mutable struct Material
     occlusionTexture::Union{Nothing,OcclusionTextureInfo}
     emissiveTexture::Union{Nothing,TextureInfo}
     emissiveFactor::Vector{Cfloat}
-    alphaMode::String
-    alphaCutoff::Cfloat
+    alphaMode::Union{Nothing,String}
+    alphaCutoff::Union{Nothing,Cfloat}
     doubleSided::Union{Nothing,Bool}
-    name::String
+    name::Union{String}
     extensions::Dict
     extras
     function Material(; pbrMetallicRoughness=nothing, normalTexture=nothing, occlusionTexture=nothing, emissiveTexture=nothing,
-        emissiveFactor=[], alphaMode="", alphaCutoff=Cfloat(NaN), doubleSided=nothing, name="", extensions=Dict(), extras=nothing)
+        emissiveFactor=[], alphaMode=nothing, alphaCutoff=nothing, doubleSided=nothing, name=nothing, extensions=Dict(), extras=nothing)
         obj = new()
         pbrMetallicRoughness != nothing && (obj.pbrMetallicRoughness = pbrMetallicRoughness;)
         normalTexture == nothing && (obj.normalTexture = normalTexture;)
@@ -148,18 +148,18 @@ mutable struct Material
             all(0 .≤ emissiveFactor .≤ 1) || throw(ArgumentError("the emissive color should be ≥ 0 and ≤ 1"))
             obj.emissiveFactor = emissiveFactor
         end
-        if alphaMode != ""
+        if alphaMode != nothing
             alphaMode == "OPAQUE" ||
             alphaMode == "MASK" ||
             alphaMode == "BLEND" || throw(ArgumentError("""the material's alpha rendering mode should be one of: "OPAQUE", "MASK", "BLEND" """))
             obj.alphaMode = alphaMode
         end
-        if !isnan(alphaCutoff)
+        if alphaCutoff != nothing
             alphaCutoff ≥ 0 || throw(ArgumentError("alphaCutoff should be ≥ 0"))
             obj.alphaCutoff = alphaCutoff
         end
         doubleSided == nothing || (obj.doubleSided = doubleSided;)
-        name == "" || (obj.name = name;)
+        name == nothing || (obj.name = name;)
         isempty(extensions) || (obj.extensions = extensions;)
         extras == nothing || (obj.extras = extras;)
         obj
