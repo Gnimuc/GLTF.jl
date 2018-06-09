@@ -32,7 +32,7 @@ const CLAMP_TO_EDGE = 33071
 const MIRRORED_REPEAT = 33648
 const REPEAT = 10497
 
-
+# types
 include("accessor.jl")
 include("animation.jl")
 include("asset.jl")
@@ -61,7 +61,7 @@ mutable struct RootObject
     meshes::Vector{Mesh}
     nodes::Vector{Node}
     samplers::Vector{Sampler}
-    scene::Int
+    scene::Union{Nothing,Int}
     scenes::Vector{Scene}
     skins::Vector{Skin}
     textures::Vector{Texture}
@@ -69,8 +69,8 @@ mutable struct RootObject
     extensionsRequired::Set{String}
     extensions::Dict
     extras
-    function RootObject(; asset=Asset("2.0"), accessors=[], animations=[], buffers=[], bufferViews=[], cameras=[],
-        images=[], materials=[], meshes=[], nodes=[], samplers=[], scene=-1, scenes=[], skins=[],
+    function RootObject(; asset, accessors=[], animations=[], buffers=[], bufferViews=[], cameras=[],
+        images=[], materials=[], meshes=[], nodes=[], samplers=[], scene=nothing, scenes=[], skins=[],
         textures=[], extensionsUsed=Set(), extensionsRequired=Set(), extensions=Dict(), extras=nothing)
         obj = new()
         obj.asset = asset
@@ -84,7 +84,7 @@ mutable struct RootObject
         isempty(meshes) || (obj.meshes = meshes;)
         isempty(nodes) || (obj.nodes = nodes;)
         isempty(samplers) || (obj.samplers = samplers;)
-        if scene != -1
+        if scene != nothing
             scene ≥ 0 || throw(ArgumentError("the index of the default scene should be ≥ 0"))
             obj.scene = scene
         end
