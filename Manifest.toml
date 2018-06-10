@@ -3,9 +3,9 @@ uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
 [[JSON2]]
 deps = ["Dates", "Test"]
-git-tree-sha1 = "d2e64bd2a057810a18f8905e3ba25df3acaab676"
+git-tree-sha1 = "1914b73df49ad202a51a81f08934c878bdda3ae7"
 uuid = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
-version = "0.1.2"
+version = "0.1.3"
 
 [[Test]]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
