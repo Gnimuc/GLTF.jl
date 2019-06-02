@@ -2,7 +2,7 @@ for ty = (:Primitive, :Mesh, :Skin, :Node, :Scene,
           :Indices, :Values, :Sparse, :Accessor,
           :Orthographic, :Perspective, :Camera,
           :Target, :Channel, :AnimationSampler, :Animation,
-          :RootObject, :Asset, :Buffer, :BufferView, :Image, :Texture, :Sampler,
+          :Asset, :Buffer, :BufferView, :Image, :Texture, :Sampler,
           :TextureInfo, :NormalTextureInfo, :OcclusionTextureInfo, :PBRMetallicRoughness, :Material)
     @eval begin
         function Base.show(io::IO, ::MIME"text/plain", x::$ty)

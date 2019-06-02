@@ -3,23 +3,27 @@ mutable struct Orthographic
     ymag::Cfloat
     zfar::Cfloat
     znear::Cfloat
-    extensions::Dict
-    extras
-    function Orthographic(; xmag, ymag, zfar, znear, extensions=Dict(), extras=nothing)
-        obj = new(xmag, ymag)
-        (zfar > 0 && zfar > znear) || throw(ArgumentError("zfar should be > 0 and must be ≥ znear"))
-        znear ≥ 0 || throw(ArgumentError("znear should be ≥ 0"))
-        obj.zfar = zfar
-        obj.znear = znear
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Orthographic()
+        obj = new()
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Orthographic keywordargs begin
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Orthographic, sym::Symbol, x)
+    if sym === :zfar
+        x > 0 || throw(ArgumentError("the distance to the far clipping plane should be > 0"))
+    elseif sym === :znear
+        x ≥ 0 || throw(ArgumentError("the distance to the near clipping plane should be ≥ 0"))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Orthographic}) = JSON3.Mutable()
+
 
 
 mutable struct Perspective
@@ -27,59 +31,59 @@ mutable struct Perspective
     yfov::Cfloat
     zfar::Union{Nothing,Cfloat}
     znear::Cfloat
-    extensions::Dict
-    extras
-    function Perspective(; yfov, znear, aspectRatio=nothing, zfar=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Perspective()
         obj = new()
-        yfov > 0 || throw(ArgumentError("the vertical field of view in radians should be > 0"))
-        znear > 0 || throw(ArgumentError("the distance to the near clipping plane should be > 0"))
-        obj.yfov = yfov
-        obj.znear = znear
-        if aspectRatio != nothing
-            aspectRatio > 0 || throw(ArgumentError("aspectRatio should be > 0"))
-            obj.aspectRatio = aspectRatio
-        end
-        if zfar != nothing
-            (zfar > 0 && zfar > znear) || throw(ArgumentError("zfar should be > 0 and must be ≥ znear"))
-            obj.zfar = zfar
-        end
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.aspectRatio = nothing
+        obj.zfar = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Perspective keywordargs begin
-    aspectRatio => (omitempty=true,)
-    zfar => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Perspective, sym::Symbol, x)
+    if sym === :aspectRatio && x !== nothing
+        x > 0 || throw(ArgumentError("the aspect ratio of the field of view should be > 0"))
+    elseif sym === :yfov
+        x > 0 || throw(ArgumentError("the vertical field of view in radians should be > 0"))
+    elseif sym === :zfar && x !== nothing
+        x > 0 || throw(ArgumentError("the distance to the far clipping plane should be > 0"))
+    elseif sym === :znear
+        x > 0 || throw(ArgumentError("the distance to the near clipping plane should be > 0"))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Perspective}) = JSON3.Mutable()
+
 
 
 mutable struct Camera
     orthographic::Union{Nothing,Orthographic}
     perspective::Union{Nothing,Perspective}
-    _type::String
+    type::String
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function Camera(; _type, orthographic=nothing, perspective=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Camera()
         obj = new()
-        _type == "perspective" ||
-        _type == "orthographic" || throw(ArgumentError("""type should be "perspective" or "orthographic" """))
-        obj._type = _type
-        orthographic != nothing && (obj.orthographic = orthographic;)
-        perspective != nothing && (obj.perspective = perspective;)
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.orthographic = nothing
+        obj.perspective = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Camera keywordargs begin
-    orthographic => (omitempty=true,)
-    perspective => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Camera, sym::Symbol, x)
+    if sym === :type
+        x == "perspective" || x == "orthographic" ||
+            throw(ArgumentError("""type should be "perspective" or "orthographic" """))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Camera}) = JSON3.Mutable()

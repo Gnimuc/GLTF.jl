@@ -1,127 +1,149 @@
 mutable struct TextureInfo
     index::Int
     texCoord::Union{Nothing,Int}
-    extensions::Dict
-    extras
-    function TextureInfo(; index, texCoord=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function TextureInfo()
         obj = new()
-        index ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
-        obj.index = index
-        if texCoord != nothing
-            texCoord ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
-            obj.texCoord = texCoord
-        end
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.texCoord = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format TextureInfo keywordargs begin
-    texCoord => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::TextureInfo, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :texCoord && x === nothing && return 0
+    return x
 end
+
+function Base.setproperty!(obj::TextureInfo, sym::Symbol, x)
+    if sym === :index
+        x ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
+    elseif sym === :texCoord && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{TextureInfo}) = JSON3.Mutable()
 
 
 mutable struct NormalTextureInfo
     index::Int
     texCoord::Union{Nothing,Int}
     scale::Union{Nothing,Cfloat}
-    extensions::Dict
-    extras
-    function NornalTextureInfo(; index, texCoord=nothing, scale=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function NornalTextureInfo()
         obj = new()
-        index ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
-        obj.index = index
-        if texCoord != nothing
-            texCoord ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
-            obj.texCoord = texCoord
-        end
-        scale == nothing || (obj.scale = scale;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.texCoord = nothing
+        obj.scale = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format NormalTextureInfo keywordargs begin
-    texCoord => (omitempty=true,)
-    scale => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::NormalTextureInfo, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :texCoord && x === nothing && return 0
+    sym === :scale && x === nothing && return 1
+    return x
 end
+
+function Base.setproperty!(obj::NormalTextureInfo, sym::Symbol, x)
+    if sym === :index
+        x ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
+    elseif sym === :texCoord && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{NormalTextureInfo}) = JSON3.Mutable()
 
 
 mutable struct OcclusionTextureInfo
     index::Int
     texCoord::Union{Nothing,Int}
     strength::Union{Nothing,Cfloat}
-    extensions::Dict
-    extras
-    function OcclusionTextureInfo(; index, texCoord=nothing, strength=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function OcclusionTextureInfo()
         obj = new()
-        index ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
-        obj.index = index
-        if texCoord != nothing
-            texCoord ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
-            obj.texCoord = texCoord
-        end
-        if strength != nothing
-            0 ≤ strength ≤ 1 || throw(ArgumentError("strength should be should be ≥ 0 and ≤ 1"))
-            obj.strength = strength
-        end
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.texCoord = nothing
+        obj.strength = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format OcclusionTextureInfo keywordargs begin
-    texCoord => (omitempty=true,)
-    scale => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::OcclusionTextureInfo, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :texCoord && x === nothing && return 0
+    sym === :strength && x === nothing && return 1
+    return x
 end
+
+function Base.setproperty!(obj::OcclusionTextureInfo, sym::Symbol, x)
+    if sym === :index
+        x ≥ 0 || throw(ArgumentError("the index of the texture should be ≥ 0"))
+    elseif sym === :texCoord && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
+    elseif sym === :strength && x !== nothing
+        0 ≤ strength ≤ 1 || throw(ArgumentError("strength should be should be ≥ 0 and ≤ 1"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{OcclusionTextureInfo}) = JSON3.Mutable()
 
 
 mutable struct PBRMetallicRoughness
-    baseColorFactor::Vector{Cfloat}
+    baseColorFactor::Union{Nothing,Vector{Cfloat}}
     baseColorTexture::Union{Nothing,TextureInfo}
     metallicFactor::Union{Nothing,Cfloat}
     roughnessFactor::Union{Nothing,Cfloat}
     metallicRoughnessTexture::Union{Nothing,TextureInfo}
-    extensions::Dict
-    extras
-    function PBRMetallicRoughness(; baseColorFactor=[], baseColorTexture=nothing, metallicFactor=nothing,
-        roughnessFactor=nothing, metallicRoughnessTexture=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function PBRMetallicRoughness()
         obj = new()
-        if !isempty(baseColorFactor)
-            length(baseColorFactor) == 4 || throw(ArgumentError("the material's base color factor should exactly contain 4 values(RGBA)"))
-            all(0 .≤ baseColorFactor .≤ 1) || throw(ArgumentError("the material's base color factor value should ≥ 0 and ≤ 1"))
-            obj.baseColorFactor = baseColorFactor
-        end
-        baseColorTexture != nothing && (obj.baseColorTexture = baseColorTexture;)
-        if metallicFactor != nothing
-            0 ≤ metallicFactor ≤ 1 || throw(ArgumentError("the metalness of the material factor should ≥ 0 and ≤ 1"))
-            obj.metallicFactor = metallicFactor
-        end
-        if roughnessFactor != nothing
-            0 ≤ roughnessFactor ≤ 1 || throw(ArgumentError("the roughness of the material factor should ≥ 0 and ≤ 1"))
-            obj.roughnessFactor = roughnessFactor
-        end
-        metallicRoughnessTexture != nothing && (obj.metallicRoughnessTexture = metallicRoughnessTexture;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.baseColorFactor = nothing
+        obj.baseColorTexture = nothing
+        obj.metallicFactor = nothing
+        obj.roughnessFactor = nothing
+        obj.metallicRoughnessTexture = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format PBRMetallicRoughness keywordargs begin
-    baseColorFactor => (omitempty=true,)
-    baseColorTexture => (omitempty=true,)
-    metallicFactor => (omitempty=true,)
-    roughnessFactor => (omitempty=true,)
-    metallicRoughnessTexture => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::PBRMetallicRoughness, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :baseColorFactor && x === nothing && return Cfloat[1,1,1,1]
+    sym === :metallicFactor && x === nothing && return 1
+    sym === :roughnessFactor && x === nothing && return 1
+    return x
 end
+
+function Base.setproperty!(obj::PBRMetallicRoughness, sym::Symbol, x)
+    if sym === :baseColorFactor && x !== nothing
+        length(x) == 4 || throw(ArgumentError("the material's base color factor should exactly contain 4 values(RGBA)"))
+        all(0 .≤ x .≤ 1) || throw(ArgumentError("the material's base color factor value should ≥ 0 and ≤ 1"))
+    elseif sym === :metallicFactor && x !== nothing
+        0 ≤ x ≤ 1 || throw(ArgumentError("the metalness of the material factor should ≥ 0 and ≤ 1"))
+    elseif sym === :roughnessFactor && x !== nothing
+        0 ≤ roughnessFactor ≤ 1 || throw(ArgumentError("the roughness of the material factor should ≥ 0 and ≤ 1"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{PBRMetallicRoughness}) = JSON3.Mutable()
 
 
 mutable struct Material
@@ -129,52 +151,50 @@ mutable struct Material
     normalTexture::Union{Nothing,NormalTextureInfo}
     occlusionTexture::Union{Nothing,OcclusionTextureInfo}
     emissiveTexture::Union{Nothing,TextureInfo}
-    emissiveFactor::Vector{Cfloat}
+    emissiveFactor::Union{Nothing,Vector{Cfloat}}
     alphaMode::Union{Nothing,String}
     alphaCutoff::Union{Nothing,Cfloat}
     doubleSided::Union{Nothing,Bool}
-    name::Union{String}
-    extensions::Dict
-    extras
-    function Material(; pbrMetallicRoughness=nothing, normalTexture=nothing, occlusionTexture=nothing, emissiveTexture=nothing,
-        emissiveFactor=[], alphaMode=nothing, alphaCutoff=nothing, doubleSided=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    name::Union{Nothing,String}
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Material()
         obj = new()
-        pbrMetallicRoughness != nothing && (obj.pbrMetallicRoughness = pbrMetallicRoughness;)
-        normalTexture == nothing && (obj.normalTexture = normalTexture;)
-        occlusionTexture == nothing && (obj.occlusionTexture = occlusionTexture;)
-        emissiveTexture == nothing && (obj.emissiveTexture = emissiveTexture;)
-        if !isempty(emissiveFactor)
-            length(emissiveFactor) == 3 || throw(ArgumentError("the RGB components of the emissive color of the material should exactly contain 3 values"))
-            all(0 .≤ emissiveFactor .≤ 1) || throw(ArgumentError("the emissive color should be ≥ 0 and ≤ 1"))
-            obj.emissiveFactor = emissiveFactor
-        end
-        if alphaMode != nothing
-            alphaMode == "OPAQUE" ||
-            alphaMode == "MASK" ||
-            alphaMode == "BLEND" || throw(ArgumentError("""the material's alpha rendering mode should be one of: "OPAQUE", "MASK", "BLEND" """))
-            obj.alphaMode = alphaMode
-        end
-        if alphaCutoff != nothing
-            alphaCutoff ≥ 0 || throw(ArgumentError("alphaCutoff should be ≥ 0"))
-            obj.alphaCutoff = alphaCutoff
-        end
-        doubleSided == nothing || (obj.doubleSided = doubleSided;)
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.pbrMetallicRoughness = nothing
+        obj.normalTexture = nothing
+        obj.occlusionTexture = nothing
+        obj.emissiveTexture = nothing
+        obj.emissiveFactor = nothing
+        obj.alphaMode = nothing
+        obj.alphaCutoff = nothing
+        obj.doubleSided = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Material keywordargs begin
-    pbrMetallicRoughness => (omitempty=true,)
-    normalTexture => (omitempty=true,)
-    occlusionTexture => (omitempty=true,)
-    emissiveTexture => (omitempty=true,)
-    emissiveFactor => (omitempty=true,)
-    alphaMode => (omitempty=true,)
-    alphaCutoff => (omitempty=true,)
-    doubleSided => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::Material, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :emissiveFactor && x === nothing && return Cfloat[0,0,0]
+    sym === :alphaMode && x === nothing && return "OPAQUE"
+    sym === :alphaCutoff && x === nothing && return 0.5
+    sym === :doubleSided && x === nothing && return false
+    return x
 end
+
+function Base.setproperty!(obj::Material, sym::Symbol, x)
+    if sym === :emissiveFactor && x !== nothing
+        length(x) == 3 || throw(ArgumentError("the RGB components of the emissive color of the material should exactly contain 3 values"))
+        all(0 .≤ x .≤ 1) || throw(ArgumentError("the emissive color should be ≥ 0 and ≤ 1"))
+    elseif sym === :alphaMode && x !== nothing
+        x === "OPAQUE" || x === "MASK" || x === "BLEND" ||
+            throw(ArgumentError("""the material's alpha rendering mode should be one of: "OPAQUE", "MASK", "BLEND" """))
+    elseif sym === :alphaCutoff && x !== nothing
+        x ≥ 0 || throw(ArgumentError("alphaCutoff should be ≥ 0"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{Material}) = JSON3.Mutable()

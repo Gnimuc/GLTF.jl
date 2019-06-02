@@ -1,32 +1,31 @@
 mutable struct Skin
     inverseBindMatrices::Union{Nothing,Int}
     skeleton::Union{Nothing,Int}
-    joints::Set{Int}
+    joints::Vector{Int}
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function Skin(; joints, inverseBindMatrices=nothing, skeleton=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Skin()
         obj = new()
-        isempty(joints) && throw(ArgumentError("indices of skeleton nodes should not be empty"))
-        obj.joints = joints
-        if inverseBindMatrices != nothing
-            inverseBindMatrices ≥ 0 || throw(ArgumentError("the index of the accessor containing the inverse-bind matrices should be ≥ 0"))
-            obj.inverseBindMatrices = inverseBindMatrices
-        end
-        if skeleton != nothing
-            skeleton ≥ 0 || throw(ArgumentError("the index of the node used as a skeleton root should be ≥ 0"))
-            obj.skeleton = skeleton
-        end
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.inverseBindMatrices = nothing
+        obj.skeleton = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Skin keywordargs begin
-    inverseBindMatrices => (omitempty=true,)
-    skeleton => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Skin, sym::Symbol, x)
+    if sym === :inverseBindMatrices && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the index of the accessor containing the inverse-bind matrices should be ≥ 0"))
+    elseif sym === :skeleton && x !== nothing
+        skeleton ≥ 0 || throw(ArgumentError("the index of the node used as a skeleton root should be ≥ 0"))
+    elseif sym === :joints
+        isempty(x) && throw(ArgumentError("joints should not be empty."))
+        allunique(x) || throw(ArgumentError("joint number must be unique."))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Skin}) = JSON3.Mutable()

@@ -3,31 +3,28 @@ mutable struct Image
     mimeType::Union{Nothing,String}
     bufferView::Union{Nothing,Int}
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function Image(; uri=nothing, mimeType=nothing, bufferView=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Image()
         obj = new()
-        uri == nothing || (obj.uri = uri;)
-        if mimeType != nothing
-            mimeType == "image/jpeg" ||
-            mimeType == "image/png" || throw(ArgumentError("""the image's MIME type should be "image/jpeg" or "image/png" """))
-            obj.mimeType = mimeType
-        end
-        if bufferView != nothing
-            bufferView ≥ 0 || throw(ArgumentError("the index of the bufferView that contains the image should be ≥ 0"))
-            obj.bufferView = bufferView
-        end
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.uri == nothing
+        obj.mimeType = nothing
+        obj.bufferView = nothing
+        obj.name == nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Image keywordargs begin
-    uri => (omitempty=true,)
-    mimeType => (omitempty=true,)
-    bufferView => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Image, sym::Symbol, x)
+    if sym === :mimeType && x !== nothing
+        x == "image/jpeg" || x == "image/png" ||
+            throw(ArgumentError("""the image's MIME type should be "image/jpeg" or "image/png" """))
+    elseif sym === :bufferView && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the index of the bufferView that contains the image should be ≥ 0"))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Image}) = JSON3.Mutable()

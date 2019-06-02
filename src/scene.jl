@@ -1,23 +1,24 @@
 mutable struct Scene
-    nodes::Set{Int}
+    nodes::Union{Nothing,Vector{Int}}
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
     function Scene(; nodes=Set(), name=nothing, extensions=Dict(), extras=nothing)
         obj = new()
-        if !isempty(nodes)
-            all(n ≥ 0 for n in nodes) || throw(ArgumentError("the indices of each root node should be ≥ 0"))
-            obj.nodes = nodes
-        end
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.nodes = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Scene keywordargs begin
-    nodes => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Scene, sym::Symbol, x)
+    if sym === :nodes && x !== nothing
+        all(n->n ≥ 0, x) || throw(ArgumentError("the indices of each root node should be ≥ 0"))
+        allunique(x) || throw(ArgumentError("nodes must be unique."))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Scene}) = JSON3.Mutable()

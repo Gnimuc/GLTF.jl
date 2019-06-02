@@ -2,28 +2,26 @@ mutable struct Texture
     sampler::Union{Nothing,Int}
     source::Union{Nothing,Int}
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function Texture(; sampler=nothing, source=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Texture()
         obj = new()
-        if sampler != nothing
-            sampler ≥ 0 || throw(ArgumentError("the index of the sampler used by this texture should be ≥ 0"))
-            obj.sampler = sampler
-        end
-        if source != nothing
-            source ≥ 0 || throw(ArgumentError("the index of the image used by this texture should be ≥ 0"))
-            obj.source = source
-        end
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.sampler = nothing
+        obj.source = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Texture keywordargs begin
-    sampler => (omitempty=true,)
-    source => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Texture, sym::Symbol, x)
+    if sym === :sampler && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the index of the sampler used by this texture should be ≥ 0"))
+    elseif sym === :source && x !== nothing
+        source ≥ 0 || throw(ArgumentError("the index of the image used by this texture should be ≥ 0"))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Texture}) = JSON3.Mutable()

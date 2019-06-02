@@ -3,23 +3,17 @@ mutable struct Asset
     generator::Union{Nothing,String}
     version::String
     minVersion::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function Asset(; version, copyright=nothing, generator=nothing, minVersion=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Asset()
         obj = new()
-        obj.version = version
-        copyright == nothing || (obj.copyright = copyright;)
-        generator == nothing || (obj.generator = generator;)
-        minVersion == nothing || (obj.minVersion = minVersion;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.copyright = nothing
+        obj.generator = nothing
+        obj.minVersion = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Asset keywordargs begin
-    copyright => (omitempty=true,)
-    generator => (omitempty=true,)
-    minVersion => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
-end
+
+JSON3.StructType(::Type{Asset}) = JSON3.Mutable()

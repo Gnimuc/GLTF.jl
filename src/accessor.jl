@@ -2,77 +2,92 @@ mutable struct Indices
     bufferView::Int
     byteOffset::Union{Nothing,Int}
     componentType::Int
-    extensions::Dict
-    extras
-    function Indices(; bufferView, componentType, byteOffset=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Indices()
         obj = new()
-        bufferView ≥ 0 || throw(ArgumentError("the index of the bufferView should be ≥ 0"))
-        componentType == UNSIGNED_BYTE ||
-        componentType == UNSIGNED_SHORT ||
-        componentType == UNSIGNED_INT || throw(ArgumentError("componentType should be one of: UNSIGNED_BYTE(5121), UNSIGNED_SHORT(5123), UNSIGNED_INT(5125)"))
-        obj.bufferView = bufferView
-        obj.componentType = componentType
-        if byteOffset != nothing
-            byteOffset ≥ 0 || throw(ArgumentError("byteOffset should be ≥ 0"))
-            obj.byteOffset = byteOffset
-        end
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.byteOffset = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Indices keywordargs begin
-    byteOffset => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::Indices, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :byteOffset && x === nothing && return 0
+    return x
 end
+
+function Base.setproperty!(obj::Indices, sym::Symbol, x)
+    if sym === :bufferView
+        x ≥ 0 || throw(ArgumentError("the index of the bufferView should be ≥ 0"))
+    elseif sym === :byteOffset && x !== nothing
+        x ≥ 0 || throw(ArgumentError("byteOffset should be ≥ 0"))
+    elseif sym === :componentType
+        x === UNSIGNED_BYTE || x === UNSIGNED_SHORT || x === UNSIGNED_INT ||
+            throw(ArgumentError("componentType should be one of: UNSIGNED_BYTE(5121), UNSIGNED_SHORT(5123), UNSIGNED_INT(5125)"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{Indices}) = JSON3.Mutable()
 
 
 mutable struct Values
     bufferView::Int
     byteOffset::Union{Nothing,Int}
-    extensions::Dict
-    extras
-    function Values(; bufferView, byteOffset=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Values()
         obj = new()
-        bufferView ≥ 0 || throw(ArgumentError("the index of the bufferView should be ≥ 0"))
-        obj.bufferView = bufferView
-        if byteOffset != nothing
-            byteOffset ≥ 0 || throw(ArgumentError("byteOffset should be ≥ 0"))
-            obj.byteOffset = byteOffset
-        end
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.byteOffset = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Values keywordargs begin
-    byteOffset => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::Values, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :byteOffset && x === nothing && return 0
+    return x
 end
+
+function Base.setproperty!(obj::Values, sym::Symbol, x)
+    if sym === :bufferView
+        x ≥ 0 || throw(ArgumentError("the index of the bufferView should be ≥ 0"))
+    elseif sym === :byteOffset && x !== nothing
+        x ≥ 0 || throw(ArgumentError("byteOffset should be ≥ 0"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{Values}) = JSON3.Mutable()
 
 
 mutable struct Sparse
     count::Int
     indices::Indices
     values::Values
-    extensions::Dict
-    extras
-    function Sparse(; count, indices, values, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Sparse()
         obj = new()
-        count ≥ 1 || throw(ArgumentError("the number of attributes encoded in this sparse accessor should be ≥ 1"))
-        obj.indices = indices
-        obj.values = values
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Sparse keywordargs begin
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Sparse, sym::Symbol, x)
+    if sym === :count
+        x ≥ 1 || throw(ArgumentError("the number of attributes encoded in this sparse accessor should be ≥ 1"))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Sparse}) = JSON3.Mutable()
 
 
 mutable struct Accessor
@@ -81,59 +96,61 @@ mutable struct Accessor
     componentType::Int
     normalized::Union{Nothing,Bool}
     count::Int
-    _type::String
-    max::Vector{Cfloat}
-    min::Vector{Cfloat}
+    type::String
+    max::Union{Nothing,Vector}
+    min::Union{Nothing,Vector}
     sparse::Union{Nothing,Sparse}
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function Accessor(; componentType, count, _type, bufferView=nothing, byteOffset=nothing,
-        normalized=nothing, max=[], min=[], sparse=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Accessor()
         obj = new()
-        componentType == BYTE ||
-        componentType == UNSIGNED_BYTE ||
-        componentType == SHORT ||
-        componentType == UNSIGNED_SHORT ||
-        componentType == UNSIGNED_INT ||
-        componentType == FLOAT || throw(ArgumentError("componentType should be one of: BYTE(5120), UNSIGNED_BYTE(5121), SHORT(5122), UNSIGNED_SHORT(5123), UNSIGNED_INT(5125), FLOAT(5126)"))
-        count ≥ 1 || throw(ArgumentError("the number of attributes referenced by this accessor should be ≥ 1"))
-        _type == "SCALAR" ||
-        _type == "VEC2" ||
-        _type == "VEC3" ||
-        _type == "VEC4" ||
-        _type == "MAT2" ||
-        _type == "MAT3" ||
-        _type == "MAT4" || throw(ArgumentError("""type should be one of: "SCALAR", "VEC2", "VEC3", "VEC4", "MAT2", "MAT3", "MAT4" """))
-        obj.componentType = componentType
-        obj.count = count
-        obj._type = _type
-        if bufferView != nothing
-            bufferView ≥ 0 || throw(ArgumentError("the index of the bufferView should be ≥ 0"))
-            obj.bufferView = bufferView
-        end
-        if byteOffset != nothing
-            byteOffset ≥ 0 || throw(ArgumentError("byteOffset should be ≥ 0"))
-            obj.byteOffset = byteOffset
-        end
-        normalized == nothing || (obj.normalized = normalized;)
-        isempty(max) || (obj.max = max;)
-        isempty(min) || (obj.min = min;)
-        sparse == nothing || (obj.sparse = sparse;)
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.bufferView = nothing
+        obj.byteOffset = nothing
+        obj.normalized = nothing
+        obj.max = nothing
+        obj.min = nothing
+        obj.sparse = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Accessor keywordargs begin
-    bufferView => (omitempty=true,)
-    byteOffset => (omitempty=true,)
-    normalized => (omitempty=true,)
-    max => (omitempty=true,)
-    min => (omitempty=true,)
-    sparse => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::Accessor, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :byteOffset && x === nothing && return 0
+    sym === :normalized && x === nothing && return false
+    return x
 end
+
+function Base.setproperty!(obj::Accessor, sym::Symbol, x)
+    if sym === :bufferView && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the index of the bufferView should be ≥ 0"))
+    elseif sym === :byteOffset && x !== nothing
+        x ≥ 0 || throw(ArgumentError("byteOffset should be ≥ 0"))
+    elseif sym === :componentType
+        x === BYTE || x === UNSIGNED_BYTE || x === SHORT ||
+        x === UNSIGNED_SHORT || x === UNSIGNED_INT || x === FLOAT ||
+            throw(ArgumentError("componentType should be one of: BYTE(5120), UNSIGNED_BYTE(5121), SHORT(5122), UNSIGNED_SHORT(5123), UNSIGNED_INT(5125), FLOAT(5126)"))
+    elseif sym === :count
+        x ≥ 1 || throw(ArgumentError("the number of attributes referenced by this accessor should be ≥ 1"))
+    elseif sym === :type
+        x === "SCALAR" ||
+        x === "VEC2" || x === "VEC3" || x === "VEC4" ||
+        x === "MAT2" || x === "MAT3" || x === "MAT4" ||
+            throw(ArgumentError("""type should be one of: "SCALAR", "VEC2", "VEC3", "VEC4", "MAT2", "MAT3", "MAT4" """))
+    elseif sym === :max && x !== nothing
+        len = length(x)
+        len === 1 || len === 2 || len === 3 || len === 4 || len === 9 || len === 16 ||
+            throw(ArgumentError("""the length should be one of: 1, 2, 3, 4, 9, 16 """))
+    elseif sym === :min && x !== nothing
+        len = length(x)
+        len === 1 || len === 2 || len === 3 || len === 4 || len === 9 || len === 16 ||
+            throw(ArgumentError("""the length should be one of: 1, 2, 3, 4, 9, 16 """))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{Accessor}) = JSON3.Mutable()

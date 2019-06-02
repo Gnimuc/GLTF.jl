@@ -2,22 +2,23 @@ mutable struct Buffer
     uri::Union{Nothing,String}
     byteLength::Int
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function Buffer(; byteLength, uri=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Buffer()
         obj = new()
-        byteLength ≥ 1 || throw(ArgumentError("byteLength should be ≥ 1"))
-        obj.byteLength = byteLength
-        uri == nothing || (obj.uri = uri;)
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.uri = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Buffer keywordargs begin
-    uri => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.setproperty!(obj::Buffer, sym::Symbol, x)
+    if sym === :byteLength
+        x ≥ 1 || throw(ArgumentError("byteLength should be ≥ 1"))
+    end
+    setfield!(obj, sym, x)
 end
+
+JSON3.StructType(::Type{Buffer}) = JSON3.Mutable()

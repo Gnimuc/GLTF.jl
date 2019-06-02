@@ -5,38 +5,40 @@ mutable struct BufferView
     byteStride::Union{Nothing,Int}
     target::Union{Nothing,Int}
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function BufferView(; buffer, byteLength, byteOffset=nothing, target=nothing, byteStride=nothing, name=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function BufferView()
         obj = new()
-        buffer ≥ 0 || throw(ArgumentError("the index of the buffer should be ≥ 0"))
-        byteLength ≥ 1 || throw(ArgumentError("byteLength should be ≥ 1"))
-        obj.buffer = buffer
-        obj.byteLength = byteLength
-        if byteOffset != nothing
-            byteOffset ≥ 0 || throw(ArgumentError("byteOffset should be ≥ 0"))
-            obj.byteOffset = byteOffset
-        end
-        if target != nothing
-            target == ARRAY_BUFFER ||
-            target == ELEMENT_ARRAY_BUFFER || throw(ArgumentError("target should be ARRAY_BUFFER(34962) or ELEMENT_ARRAY_BUFFER(34963)"))
-            obj.target = target
-        end
-        if byteStride != nothing
-            4 ≤ byteStride ≤ 252 || throw(ArgumentError("byteStride should be ≥ 4 and ≤ 252"))
-            obj.byteStride = byteStride
-        end
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.byteOffset = nothing
+        obj.byteStride = nothing
+        obj.target = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format BufferView keywordargs begin
-    byteOffset => (omitempty=true,)
-    byteStride => (omitempty=true,)
-    target => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::BufferView, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :byteOffset && x === nothing && return 0
+    return x
 end
+
+function Base.setproperty!(obj::BufferView, sym::Symbol, x)
+    if sym === :buffer
+        x ≥ 0 || throw(ArgumentError("the index of the buffer should be ≥ 0"))
+    elseif sym === :byteOffset && x !== nothing
+        x ≥ 0 || throw(ArgumentError("byteOffset should be ≥ 0"))
+    elseif sym === :byteLength
+        x ≥ 1 || throw(ArgumentError("byteLength should be ≥ 1"))
+    elseif sym === :byteStride && x !== nothing
+        4 ≤ x ≤ 252 || throw(ArgumentError("byteStride should be ≥ 4 and ≤ 252"))
+    elseif sym === :target && x !== nothing
+        x === ARRAY_BUFFER || x === ELEMENT_ARRAY_BUFFER ||
+            throw(ArgumentError("target should be ARRAY_BUFFER(34962) or ELEMENT_ARRAY_BUFFER(34963)"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{BufferView}) = JSON3.Mutable()

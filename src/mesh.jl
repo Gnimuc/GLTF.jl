@@ -3,62 +3,57 @@ mutable struct Primitive
     indices::Union{Nothing,Int}
     material::Union{Nothing,Int}
     mode::Union{Nothing,Int}
-    targets::Vector{Dict}
-    extensions::Dict
-    extras
-    function Primitive(; attributes, indices=nothing, material=nothing, mode=nothing, targets=[], extensions=Dict(), extras=nothing)
+    targets::Union{Nothing,Vector{Dict}}
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Primitive()
         obj = new()
-        isempty(attributes) && throw(ArgumentError("attributes should not be empty"))
-        obj.attributes = attributes
-        if indices != nothing
-            indices ≥ 0 || throw(ArgumentError("the index of the accessor that contains mesh indices should be ≥ 0"))
-            obj.indices = indices
-        end
-        if material != nothing
-            material ≥ 0 || throw(ArgumentError("the index of the material to apply to this primitive when rendering should be ≥ 0"))
-            obj.material = material
-        end
-        if mode != nothing
-            mode == POINTS || mode == LINES || mode == LINE_LOOP || mode == LINE_STRIP || mode == TRIANGLES ||
-            mode == TRIANGLE_STRIP || mode == TRIANGLE_FAN || throw(ArgumentError("the type of primitives to render should be one of: POINTS(0), LINES(1), LINE_LOOP(2), LINE_STRIP(3), TRIANGLES(4), TRIANGLE_STRIP(5), TRIANGLE_FAN(6)"))
-            obj.mode = mode
-        end
-        isempty(targets) || (obj.targets = targets;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.indices = nothing
+        obj.material = nothing
+        obj.mode = nothing
+        obj.targets = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Primitive keywordargs begin
-    indices => (omitempty=true,)
-    material => (omitempty=true,)
-    mode => (omitempty=true,)
-    targets => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
+
+function Base.getproperty(obj::Primitive, sym::Symbol)
+    x = getfield(obj, sym)
+    sym === :mode && x === nothing && return 4
+    return x
 end
+
+function Base.setproperty!(obj::Primitive, sym::Symbol, x)
+    if sym === :indices && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the index of the accessor that contains mesh indices should be ≥ 0"))
+    elseif sym === :material && x !== nothing
+        x ≥ 0 || throw(ArgumentError("the index of the material to apply to this primitive when rendering should be ≥ 0"))
+    elseif sym === :mode && x !== nothing
+        x === POINTS || x === LINES || x === LINE_LOOP || x === LINE_STRIP ||
+            x === TRIANGLES || x === TRIANGLE_STRIP || x === TRIANGLE_FAN ||
+                throw(ArgumentError("the type of primitives to render should be one of: POINTS(0), LINES(1), LINE_LOOP(2), LINE_STRIP(3), TRIANGLES(4), TRIANGLE_STRIP(5), TRIANGLE_FAN(6)"))
+    end
+    setfield!(obj, sym, x)
+end
+
+JSON3.StructType(::Type{Primitive}) = JSON3.Mutable()
 
 
 mutable struct Mesh
     primitives::Vector{Primitive}
-    weights::Vector{Cfloat}
+    weights::Union{Nothing,Vector{Cfloat}}
     name::Union{Nothing,String}
-    extensions::Dict
-    extras
-    function Mesh(; primitives, weights=[], name=nothing, extensions=Dict(), extras=nothing)
+    extensions::Union{Nothing,Dict}
+    extras::Union{Nothing,Dict}
+    function Mesh()
         obj = new()
-        isempty(primitives) && throw(ArgumentError("primitives should not be empty"))
-        obj.primitives = primitives
-        isempty(weights) || (obj.weights = weights;)
-        name == nothing || (obj.name = name;)
-        isempty(extensions) || (obj.extensions = extensions;)
-        extras == nothing || (obj.extras = extras;)
+        obj.weights = nothing
+        obj.name = nothing
+        obj.extensions = nothing
+        obj.extras = nothing
         obj
     end
 end
-JSON2.@format Mesh keywordargs begin
-    weights => (omitempty=true,)
-    name => (omitempty=true,)
-    extensions => (omitempty=true,)
-    extras => (omitempty=true,)
-end
+
+JSON3.StructType(::Type{Mesh}) = JSON3.Mutable()
