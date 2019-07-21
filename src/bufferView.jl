@@ -42,3 +42,4 @@ function Base.setproperty!(obj::BufferView, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{BufferView}) = JSON3.Mutable()
+JSON3.omitempties(::Type{BufferView}) = (:byteOffset, :byteStride, :target, :name, :extensions, :extras)

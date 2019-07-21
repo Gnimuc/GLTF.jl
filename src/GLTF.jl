@@ -93,6 +93,18 @@ mutable struct GLTFData
 end
 
 JSON3.StructType(::Type{GLTFData}) = JSON3.Mutable()
+JSON3.omitempties(::Type{GLTFData}) = (:extensionsUsed, :extensionsRequired, :accessors, :animations,
+                                       :buffers, :bufferViews, :cameras, :images, :materials, :meshes,
+                                       :nodes, :samplers, :scene, :scenes, :skins, :textures, :extensions, :extras)
+
+function Base.show(io::IO, ::MIME"text/plain", x::GLTFData)
+    print(io, GLTFData, ":")
+    for name in fieldnames(GLTFData)
+        isdefined(x, name) || continue
+        v = getfield(x, name)
+        v != nothing && print(io, "\n  $name: ", v)
+    end
+end
 
 
 end # module

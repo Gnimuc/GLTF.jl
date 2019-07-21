@@ -38,6 +38,7 @@ function Base.setproperty!(obj::Primitive, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Primitive}) = JSON3.Mutable()
+JSON3.omitempties(::Type{Primitive}) = (:indices, :material, :mode, :targets, :extensions, :extras)
 
 
 mutable struct Mesh
@@ -57,3 +58,4 @@ mutable struct Mesh
 end
 
 JSON3.StructType(::Type{Mesh}) = JSON3.Mutable()
+JSON3.omitempties(::Type{Mesh}) = (:weights, :name, :extensions, :extras)

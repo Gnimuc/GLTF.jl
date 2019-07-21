@@ -22,3 +22,4 @@ function Base.setproperty!(obj::Buffer, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Buffer}) = JSON3.Mutable()
+JSON3.omitempties(::Type{Buffer}) = (:uri, :name, :extensions, :extras)

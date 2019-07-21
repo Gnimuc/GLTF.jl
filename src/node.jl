@@ -62,3 +62,4 @@ function Base.setproperty!(obj::Node, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Node}) = JSON3.Mutable()
+JSON3.omitempties(::Type{Node}) = (:camera, :children, :skin, :matrix, :mesh, :rotation, :scale, :translation, :weights, :name, :extensions, :extras)

@@ -45,3 +45,4 @@ function Base.setproperty!(obj::Sampler, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Sampler}) = JSON3.Mutable()
+JSON3.omitempties(::Type{Sampler}) = (:magFilter, :minFilter, :wrapS, :wrapT, :name, :extensions, :extras)

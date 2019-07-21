@@ -7,10 +7,10 @@ mutable struct Image
     extras::Union{Nothing,Dict}
     function Image()
         obj = new()
-        obj.uri == nothing
+        obj.uri = nothing
         obj.mimeType = nothing
         obj.bufferView = nothing
-        obj.name == nothing
+        obj.name = nothing
         obj.extensions = nothing
         obj.extras = nothing
         obj
@@ -28,3 +28,4 @@ function Base.setproperty!(obj::Image, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Image}) = JSON3.Mutable()
+JSON3.omitempties(::Type{Image}) = (:uri, :mimeType, :bufferView, :name, :extensions, :extras)

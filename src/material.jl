@@ -28,6 +28,7 @@ function Base.setproperty!(obj::TextureInfo, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{TextureInfo}) = JSON3.Mutable()
+JSON3.omitempties(::Type{TextureInfo}) = (:texCoord, :extensions, :extras)
 
 
 mutable struct NormalTextureInfo
@@ -63,6 +64,7 @@ function Base.setproperty!(obj::NormalTextureInfo, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{NormalTextureInfo}) = JSON3.Mutable()
+JSON3.omitempties(::Type{NormalTextureInfo}) = (:texCoord, :scale, :extensions, :extras)
 
 
 mutable struct OcclusionTextureInfo
@@ -100,6 +102,7 @@ function Base.setproperty!(obj::OcclusionTextureInfo, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{OcclusionTextureInfo}) = JSON3.Mutable()
+JSON3.omitempties(::Type{OcclusionTextureInfo}) = (:texCoord, :strength, :extensions, :extras)
 
 
 mutable struct PBRMetallicRoughness
@@ -144,6 +147,7 @@ function Base.setproperty!(obj::PBRMetallicRoughness, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{PBRMetallicRoughness}) = JSON3.Mutable()
+JSON3.omitempties(::Type{PBRMetallicRoughness}) = (:baseColorFactor, :baseColorTexture, :metallicFactor, :roughnessFactor, :metallicRoughnessTexture, :extensions, :extras)
 
 
 mutable struct Material
@@ -198,3 +202,4 @@ function Base.setproperty!(obj::Material, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Material}) = JSON3.Mutable()
+JSON3.omitempties(::Type{Material}) = (:pbrMetallicRoughness, :normalTexture, :occlusionTexture, :emissiveTexture, :emissiveFactor, :alphaMode, :alphaCutoff, :doubleSided, :name, :extensions, :extras)
