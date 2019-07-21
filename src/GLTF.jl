@@ -2,6 +2,8 @@ module GLTF
 
 using JSON3
 
+export load, save
+
 # constants
 const ARRAY_BUFFER = 34962
 const ELEMENT_ARRAY_BUFFER = 34963
@@ -46,65 +48,21 @@ include("sampler.jl")
 include("scene.jl")
 include("skin.jl")
 include("texture.jl")
+include("object.jl")
 include("show.jl")
 
-mutable struct GLTFData
-    extensionsUsed::Union{Nothing,Vector{String}}
-    extensionsRequired::Union{Nothing,Vector{String}}
-    accessors::Union{Nothing,Vector{Accessor}}
-    animations::Union{Nothing,Vector{Animation}}
-    asset::Asset
-    buffers::Union{Nothing,Vector{Buffer}}
-    bufferViews::Union{Nothing,Vector{BufferView}}
-    cameras::Union{Nothing,Vector{Camera}}
-    images::Union{Nothing,Vector{Image}}
-    materials::Union{Nothing,Vector{Material}}
-    meshes::Union{Nothing,Vector{Mesh}}
-    nodes::Union{Nothing,Vector{Node}}
-    samplers::Union{Nothing,Vector{Sampler}}
-    scene::Union{Nothing,Int}
-    scenes::Union{Nothing,Vector{Scene}}
-    skins::Union{Nothing,Vector{Skin}}
-    textures::Union{Nothing,Vector{Texture}}
-    extensions::Union{Nothing,Dict}
-    extras::Union{Nothing,Dict}
-    function GLTFData()
-        obj = new()
-        obj.extensionsUsed = nothing
-        obj.extensionsRequired = nothing
-        obj.accessors = nothing
-        obj.animations = nothing
-        obj.buffers = nothing
-        obj.bufferViews = nothing
-        obj.cameras = nothing
-        obj.images = nothing
-        obj.materials = nothing
-        obj.meshes = nothing
-        obj.nodes = nothing
-        obj.samplers = nothing
-        obj.scene = nothing
-        obj.scenes = nothing
-        obj.skins = nothing
-        obj.textures = nothing
-        obj.extensions = nothing
-        obj.extras = nothing
-        obj
+function load(path::AbstractString)
+    open(path) do f
+        JSON3.read(read(f, String), Object)
     end
 end
 
-JSON3.StructType(::Type{GLTFData}) = JSON3.Mutable()
-JSON3.omitempties(::Type{GLTFData}) = (:extensionsUsed, :extensionsRequired, :accessors, :animations,
-                                       :buffers, :bufferViews, :cameras, :images, :materials, :meshes,
-                                       :nodes, :samplers, :scene, :scenes, :skins, :textures, :extensions, :extras)
-
-function Base.show(io::IO, ::MIME"text/plain", x::GLTFData)
-    print(io, GLTFData, ":")
-    for name in fieldnames(GLTFData)
-        isdefined(x, name) || continue
-        v = getfield(x, name)
-        v != nothing && print(io, "\n  $name: ", v)
+function save(path::AbstractString, obj::Object)
+    open(path) do f
+        write(f, JSON3.write(obj))
     end
 end
+
 
 
 end # module

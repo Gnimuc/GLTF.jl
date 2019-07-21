@@ -37,7 +37,7 @@ mutable struct NormalTextureInfo
     scale::Union{Nothing,Cfloat}
     extensions::Union{Nothing,Dict}
     extras::Union{Nothing,Dict}
-    function NornalTextureInfo()
+    function NormalTextureInfo()
         obj = new()
         obj.texCoord = nothing
         obj.scale = nothing
