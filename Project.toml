@@ -1,7 +1,16 @@
-authors = ["Gnimuc <qiyupei@gmail.com>"]
 name = "GLTF"
-uuid = "0844153c-61bc-11e8-1c77-7ba283568cc4"
-version = "0.0.1"
+uuid = "aeeaf58c-ab4d-11e9-3a9f-9b6bf58b5bc3"
+authors = ["Gnimuc <qiyupei@gmail.com>"]
+version = "0.1.0"
 
 [deps]
-JSON2 = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
