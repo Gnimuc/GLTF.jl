@@ -58,7 +58,7 @@ function load(path::AbstractString)
 end
 
 function save(path::AbstractString, obj::Object)
-    open(path) do f
+    open(path, write=true) do f
         write(f, JSON3.write(obj))
     end
 end
