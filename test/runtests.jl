@@ -11,7 +11,8 @@ if !isfile(TEST_LOCAL_PATH)
 end
 
 @static if Sys.iswindows()
-    isdir(ASSETS_LOCAL_PATH) || run(`7z x $TEST_LOCAL_PATH -o$ASSETS_LOCAL_PATH`)
+    const exe7z = joinpath(Sys.BINDIR, "7z.exe")
+    isdir(ASSETS_LOCAL_PATH) || run(`$exe7z x $TEST_LOCAL_PATH -o$ASSETS_LOCAL_PATH`)
 else
     isdir(ASSETS_LOCAL_PATH) || run(`unzip -x $TEST_LOCAL_PATH -d $ASSETS_LOCAL_PATH`)
 end
