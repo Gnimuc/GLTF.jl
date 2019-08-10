@@ -33,7 +33,7 @@ const CLAMP_TO_EDGE = 33071
 const MIRRORED_REPEAT = 33648
 const REPEAT = 10497
 
-# types
+include("zvector.jl")
 include("accessor.jl")
 include("animation.jl")
 include("asset.jl")

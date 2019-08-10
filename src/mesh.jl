@@ -42,7 +42,7 @@ JSON3.omitempties(::Type{Primitive}) = (:indices, :material, :mode, :targets, :e
 
 
 mutable struct Mesh
-    primitives::Vector{Primitive}
+    primitives::ZVector{Primitive}
     weights::Union{Nothing,Vector{Cfloat}}
     name::Union{Nothing,String}
     extensions::Union{Nothing,Dict}

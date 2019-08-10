@@ -88,8 +88,8 @@ JSON3.omitempties(::Type{AnimationSampler}) = (:interpolation, :extensions, :ext
 
 
 mutable struct Animation
-    channels::Vector{Channel}
-    samplers::Vector{AnimationSampler}
+    channels::ZVector{Channel}
+    samplers::ZVector{AnimationSampler}
     name::Union{Nothing,String}
     extensions::Union{Nothing,Dict}
     extras::Union{Nothing,Dict}
