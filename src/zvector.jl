@@ -1,4 +1,4 @@
-import Base: @propagate_inbounds
+import Base: IdentityUnitRange, @propagate_inbounds
 
 # from https://github.com/JuliaArrays/CustomUnitRanges.jl/blob/master/src/ZeroRange.jl
 """
@@ -70,9 +70,8 @@ Base.parent(A::ZVector) = A.x
 Base.size(A::ZVector) = size(parent(A))
 Base.size(A::ZVector, d) = size(parent(A), d)
 
-Base.axes(A::ZVector{T}) where {T} = map(n->ZeroRange(n), size(A))
-Base.axes(A::ZVector{T}, d) where {T} = d == 1 ? axes(A)[d] : ZeroRange(1)
-Base.axes1(A::AbstractVector) = axes(A)[1]
+@inline Base.axes(A::ZVector) = (IdentityUnitRange(ZeroRange(length(parent(A)))),)
+@inline Base.axes(A::ZVector, d) = d == 1 ? IdentityUnitRange(ZeroRange(length(parent(A)))) : IdentityUnitRange(0:0)
 
 Base.IndexStyle(::Type{T}) where {T<:ZVector} = IndexLinear()
 Base.eachindex(::IndexLinear, A::ZVector) = axes(A, 1)
@@ -86,7 +85,7 @@ Base.length(A::ZVector) = prod(size(A))
 end
 
 @inline @propagate_inbounds function Base.getindex(A::ZVector{T}, I::Vararg{Int,N}) where {T,N}
-    @boundscheck checkbounds(A, I...)
+    @boundscheck checkbounds(parent(A), (I .+ 1)...)
     @inbounds ret = parent(A)[(I .+ 1)...]
     ret
 end
@@ -98,7 +97,7 @@ end
 end
 
 @inline @propagate_inbounds function Base.setindex!(A::ZVector{T}, val, I::Vararg{Int,N}) where {T,N}
-    @boundscheck checkbounds(A, I...)
+    @boundscheck checkbounds(parent(A), (I .+ 1)...)
     @inbounds parent(A)[(I .+ 1)...] = val
     val
 end
@@ -106,9 +105,10 @@ end
 indexlength(r::AbstractRange) = length(r)
 indexlength(i::Integer) = i
 
+ZeroRangeIUR{T} = IdentityUnitRange{ZeroRange{T}}
 Base.similar(A::ZVector) = similar(A, eltype(A), size(A))
 Base.similar(A::ZVector, ::Type{T}) where {T} = similar(A, T, size(A))
 Base.similar(A::ZVector, dims::Dims{1}) = similar(A, eltype(A), dims)
 Base.similar(A::ZVector, ::Type{T}, dims::Dims{1}) where {T} = ZVector{T}(undef, first(dims))
-Base.similar(A::AbstractVector, ::Type{T}, inds::Tuple{ZeroRange,Vararg{ZeroRange}}) where {T} = ZVector(similar(A, T, map(indexlength, inds)))
-Base.similar(::Type{T}, shape::Tuple{ZeroRange,Vararg{ZeroRange}}) where {T<:AbstractArray} = ZVector(T(undef, map(indexlength, shape)))
+Base.similar(A::AbstractVector, ::Type{T}, inds::Tuple{ZeroRangeIUR,Vararg{ZeroRangeIUR}}) where {T} = ZVector(similar(A, T, map(indexlength, inds)))
+Base.similar(::Type{T}, shape::Tuple{ZeroRangeIUR,Vararg{ZeroRangeIUR}}) where {T<:AbstractArray} = ZVector(T(undef, map(indexlength, shape)))
