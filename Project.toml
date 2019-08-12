@@ -1,13 +1,14 @@
 name = "GLTF"
 uuid = "aeeaf58c-ab4d-11e9-3a9f-9b6bf58b5bc3"
 authors = ["Gnimuc <qiyupei@gmail.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 
 [compat]
-julia = "1"
+julia = "^1.1"
+JSON3 = "~0.1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
