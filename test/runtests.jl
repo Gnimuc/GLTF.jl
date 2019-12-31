@@ -11,7 +11,7 @@ if !isfile(TEST_LOCAL_PATH)
 end
 
 @static if Sys.iswindows()
-    const exe7z = joinpath(Sys.BINDIR, "7z.exe")
+    const exe7z = VERSION >= v"1.3.0" ? joinpath(Sys.BINDIR, "..", "libexec", "7z.exe") : joinpath(Sys.BINDIR, "7z.exe")
     isdir(ASSETS_LOCAL_PATH) || run(`$exe7z x $TEST_LOCAL_PATH -o$ASSETS_LOCAL_PATH`)
 else
     isdir(ASSETS_LOCAL_PATH) || run(`unzip -x $TEST_LOCAL_PATH -d $ASSETS_LOCAL_PATH`)
