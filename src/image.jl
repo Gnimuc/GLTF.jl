@@ -28,4 +28,4 @@ function Base.setproperty!(obj::Image, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Image}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Image}) = (:uri, :mimeType, :bufferView, :name, :extensions, :extras)
+StructTypes.omitempties(::Type{Image}) = (:uri, :mimeType, :bufferView, :name, :extensions, :extras)

@@ -25,4 +25,4 @@ function Base.setproperty!(obj::Texture, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Texture}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Texture}) = (:sampler, :source, :name, :extensions, :extras)
+StructTypes.omitempties(::Type{Texture}) = (:sampler, :source, :name, :extensions, :extras)

@@ -17,4 +17,4 @@ mutable struct Asset
 end
 
 JSON3.StructType(::Type{Asset}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Asset}) = (:copyright, :generator, :minVersion, :extensions, :extras)
+StructTypes.omitempties(::Type{Asset}) = (:copyright, :generator, :minVersion, :extensions, :extras)

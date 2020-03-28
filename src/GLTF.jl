@@ -1,6 +1,6 @@
 module GLTF
 
-using JSON3
+using JSON3, StructTypes
 
 export load, save
 

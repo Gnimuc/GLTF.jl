@@ -23,7 +23,7 @@ function Base.setproperty!(obj::Orthographic, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Orthographic}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Orthographic}) = (:extensions, :extras)
+StructTypes.omitempties(::Type{Orthographic}) = (:extensions, :extras)
 
 
 mutable struct Perspective
@@ -57,7 +57,7 @@ function Base.setproperty!(obj::Perspective, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Perspective}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Perspective}) = (:aspectRatio, :zfar, :extensions, :extras)
+StructTypes.omitempties(::Type{Perspective}) = (:aspectRatio, :zfar, :extensions, :extras)
 
 
 mutable struct Camera
@@ -87,4 +87,4 @@ function Base.setproperty!(obj::Camera, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Camera}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Camera}) = (:orthographic, :perspective, :name, :extensions, :extras)
+StructTypes.omitempties(::Type{Camera}) = (:orthographic, :perspective, :name, :extensions, :extras)

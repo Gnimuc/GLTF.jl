@@ -29,4 +29,4 @@ function Base.setproperty!(obj::Skin, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Skin}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Skin}) = (:inverseBindMatrices, :skeleton, :name, :extensions, :extras)
+StructTypes.omitempties(::Type{Skin}) = (:inverseBindMatrices, :skeleton, :name, :extensions, :extras)
