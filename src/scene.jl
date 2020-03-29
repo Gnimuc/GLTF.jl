@@ -22,4 +22,4 @@ function Base.setproperty!(obj::Scene, sym::Symbol, x)
 end
 
 JSON3.StructType(::Type{Scene}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Scene}) = (:nodes, :name, :extensions, :extras)
+StructTypes.omitempties(::Type{Scene}) = (:nodes, :name, :extensions, :extras)

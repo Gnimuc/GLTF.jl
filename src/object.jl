@@ -43,6 +43,6 @@ mutable struct Object
 end
 
 JSON3.StructType(::Type{Object}) = JSON3.Mutable()
-JSON3.omitempties(::Type{Object}) = (:extensionsUsed, :extensionsRequired, :accessors, :animations,
+StructTypes.omitempties(::Type{Object}) = (:extensionsUsed, :extensionsRequired, :accessors, :animations,
                                      :buffers, :bufferViews, :cameras, :images, :materials, :meshes,
                                      :nodes, :samplers, :scene, :scenes, :skins, :textures, :extensions, :extras)
