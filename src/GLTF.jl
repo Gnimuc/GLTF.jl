@@ -64,7 +64,7 @@ function save(path::AbstractString, obj::Object)
 end
 
 @compile_workload begin
-    filenames = ["Mesh_PrimitiveRestart_00.gltf", "DamagedHelmet.gltf"]
+    filenames = ["DamagedHelmet.gltf"]
     for filename in filenames
         path = joinpath(pkgdir(GLTF), "assets", filename)
         asset = load(path)::Object
