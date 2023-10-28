@@ -53,7 +53,7 @@ Base.convert(::Type{ZeroRange{T}}, r::ZeroRange{T}) where {T<:Real} = r
 Base.convert(::Type{ZeroRange{T}}, r::ZeroRange) where {T<:Real} = ZeroRange{T}(r.len)
 ZeroRange{T}(r::ZeroRange) where {T} = convert(ZeroRange{T}, r)
 
-Base.show(io::IO, r::ZeroRange) = print(io, typeof(r).name, "(", r.len, ")")
+Base.show(io::IO, r::ZeroRange) = print(io, typeof(r), "(", r.len, ")")
 Base.show(io::IO, ::MIME"text/plain", r::ZeroRange) = show(io, r)
 
 """
@@ -70,13 +70,15 @@ Base.parent(A::ZVector) = A.x
 Base.size(A::ZVector) = size(parent(A))
 Base.size(A::ZVector, d) = size(parent(A), d)
 
-@inline Base.axes(A::ZVector) = (IdentityUnitRange(ZeroRange(length(parent(A)))),)
+@inline Base.axes(A::ZVector) = (axes(A, 1),)
 @inline Base.axes(A::ZVector, d) = d == 1 ? IdentityUnitRange(ZeroRange(length(parent(A)))) : IdentityUnitRange(0:0)
 
 Base.IndexStyle(::Type{T}) where {T<:ZVector} = IndexLinear()
 Base.eachindex(::IndexLinear, A::ZVector) = axes(A, 1)
 
 Base.length(A::ZVector) = prod(size(A))
+
+Base.isassigned(A::ZVector, i::Integer, j::Integer) = isassigned(A, i) && j == 0
 
 @inline @propagate_inbounds function Base.getindex(A::ZVector{T}, i::Int) where {T}
     @boundscheck checkbounds(A, i)
