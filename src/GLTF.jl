@@ -1,6 +1,6 @@
 module GLTF
 
-using JSON3, StructTypes
+using JSON3, StructTypes, PrecompileTools
 
 export load, save
 
@@ -63,6 +63,18 @@ function save(path::AbstractString, obj::Object)
     end
 end
 
-
+@compile_workload begin
+    filenames = ["Mesh_PrimitiveRestart_00.gltf", "DamagedHelmet.gltf"]
+    for filename in filenames
+        path = joinpath(pkgdir(GLTF), "assets", filename)
+        asset = load(path)::Object
+        sprint(show, asset)
+        sprint(show, MIME"text/plain"(), asset)
+        tmp = tempname()
+        save(tmp, asset)
+        load(tmp)::Object
+        rm(tmp)
+    end
+end
 
 end # module
