@@ -17,6 +17,11 @@ else
     isdir(ASSETS_LOCAL_PATH) || run(`unzip -x $TEST_LOCAL_PATH -d $ASSETS_LOCAL_PATH`)
 end
 
+extra_assets = ["DamagedHelmet.gltf"]
+for asset in extra_assets
+    cp(joinpath(pkgdir(GLTF), "assets", asset), joinpath(ASSETS_LOCAL_PATH, asset); force = true)
+end
+
 @testset "glTF-Asset-Generator" begin
     for (root, dirs, files) in walkdir(ASSETS_LOCAL_PATH)
         for file in files
@@ -27,4 +32,4 @@ end
             end
         end
     end
-end
+end;
