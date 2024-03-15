@@ -96,7 +96,7 @@ function Base.setproperty!(obj::OcclusionTextureInfo, sym::Symbol, x)
     elseif sym === :texCoord && x !== nothing
         x ≥ 0 || throw(ArgumentError("the set index of texture's TEXCOORD attribute used for texture coordinate mapping should be ≥ 0"))
     elseif sym === :strength && x !== nothing
-        0 ≤ strength ≤ 1 || throw(ArgumentError("strength should be should be ≥ 0 and ≤ 1"))
+        0 ≤ x ≤ 1 || throw(ArgumentError("strength should be should be ≥ 0 and ≤ 1"))
     end
     setfield!(obj, sym, x)
 end
@@ -141,7 +141,7 @@ function Base.setproperty!(obj::PBRMetallicRoughness, sym::Symbol, x)
     elseif sym === :metallicFactor && x !== nothing
         0 ≤ x ≤ 1 || throw(ArgumentError("the metalness of the material factor should ≥ 0 and ≤ 1"))
     elseif sym === :roughnessFactor && x !== nothing
-        0 ≤ roughnessFactor ≤ 1 || throw(ArgumentError("the roughness of the material factor should ≥ 0 and ≤ 1"))
+        0 ≤ x ≤ 1 || throw(ArgumentError("the roughness of the material factor should ≥ 0 and ≤ 1"))
     end
     setfield!(obj, sym, x)
 end
