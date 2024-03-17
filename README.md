@@ -4,7 +4,7 @@
 [![TagBot](https://github.com/Gnimuc/GLTF.jl/actions/workflows/TagBot.yml/badge.svg)](https://github.com/Gnimuc/GLTF.jl/actions/workflows/TagBot.yml)
 [![Codecov](https://codecov.io/gh/Gnimuc/GLTF.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/Gnimuc/GLTF.jl)
 
-[glTF](https://github.com/KhronosGroup/glTF) 2.0 loader and writer based on [JSON3](https://github.com/quinnj/JSON3.jl).
+[glTF](https://github.com/KhronosGroup/glTF) 2.0 loader and writer based on [JSON3](https://github.com/quinnj/JSON3.jl). This package only handles .gltf and not .glb.
 
 ## Installation
 ```julia
