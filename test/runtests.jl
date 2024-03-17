@@ -1,6 +1,6 @@
 using GLTF
 using Test
-using Download
+using Downloads
 
 const TEST_ASSETS_URL = "https://github.com/KhronosGroup/glTF-Asset-Generator/releases/download/v0.6.1/GeneratedAssets-0.6.1.zip"
 const TEST_LOCAL_PATH = joinpath(@__DIR__, "download.zip")
