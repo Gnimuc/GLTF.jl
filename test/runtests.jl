@@ -8,7 +8,7 @@ const ASSETS_LOCAL_PATH = joinpath(@__DIR__, "assets")
 
 if !isfile(TEST_LOCAL_PATH)
     @info "downloading test assets..."
-    download(TEST_ASSETS_URL, TEST_LOCAL_PATH)
+    Downloads.download(TEST_ASSETS_URL, TEST_LOCAL_PATH)
 end
 
 @static if Sys.iswindows()
