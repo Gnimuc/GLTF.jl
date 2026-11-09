@@ -44,5 +44,4 @@ function Base.setproperty!(obj::Sampler, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Sampler}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Sampler}) = (:magFilter, :minFilter, :wrapS, :wrapT, :name, :extensions, :extras)
+JSON.lower(x::Sampler) = _lower_omitting(x, (:magFilter, :minFilter, :wrapS, :wrapT, :name, :extensions, :extras))

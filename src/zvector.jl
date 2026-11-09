@@ -65,8 +65,11 @@ struct ZVector{T} <: AbstractVector{T}
 end
 ZVector() = ZVector(Vector{Any}(undef, 0))
 ZVector(::UndefInitializer, m::Integer) = ZVector(Vector{Any}(undef, Int(m)))
+ZVector{T}(::UndefInitializer, m::Integer) where {T} = ZVector(Vector{T}(undef, Int(m)))
 
 Base.parent(A::ZVector) = A.x
+Base.push!(A::ZVector, value) = (push!(parent(A), value); A)
+Base.resize!(A::ZVector, n::Integer) = (resize!(parent(A), n); A)
 Base.size(A::ZVector) = size(parent(A))
 Base.size(A::ZVector, d) = size(parent(A), d)
 

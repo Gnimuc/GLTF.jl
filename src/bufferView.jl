@@ -41,5 +41,4 @@ function Base.setproperty!(obj::BufferView, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{BufferView}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{BufferView}) = (:byteOffset, :byteStride, :target, :name, :extensions, :extras)
+JSON.lower(x::BufferView) = _lower_omitting(x, (:byteOffset, :byteStride, :target, :name, :extensions, :extras))

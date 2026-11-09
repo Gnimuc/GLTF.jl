@@ -22,8 +22,7 @@ function Base.setproperty!(obj::Target, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Target}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Target}) = (:node, :extensions, :extras)
+JSON.lower(x::Target) = _lower_omitting(x, (:node, :extensions, :extras))
 
 
 mutable struct Channel
@@ -46,8 +45,7 @@ function Base.setproperty!(obj::Channel, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Channel}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Channel}) = (:extensions, :extras)
+JSON.lower(x::Channel) = _lower_omitting(x, (:extensions, :extras))
 
 
 mutable struct AnimationSampler
@@ -83,8 +81,7 @@ function Base.setproperty!(obj::AnimationSampler, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{AnimationSampler}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{AnimationSampler}) = (:interpolation, :extensions, :extras)
+JSON.lower(x::AnimationSampler) = _lower_omitting(x, (:interpolation, :extensions, :extras))
 
 
 mutable struct Animation
@@ -102,5 +99,4 @@ mutable struct Animation
     end
 end
 
-JSON3.StructType(::Type{Animation}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Animation}) = (:name, :extensions, :extras)
+JSON.lower(x::Animation) = _lower_omitting(x, (:name, :extensions, :extras))

@@ -31,8 +31,7 @@ function Base.setproperty!(obj::Indices, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Indices}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Indices}) = (:byteOffset, :extensions, :extras)
+JSON.lower(x::Indices) = _lower_omitting(x, (:byteOffset, :extensions, :extras))
 
 mutable struct Values
     bufferView::Int
@@ -63,8 +62,7 @@ function Base.setproperty!(obj::Values, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Values}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Values}) = (:byteOffset, :extensions, :extras)
+JSON.lower(x::Values) = _lower_omitting(x, (:byteOffset, :extensions, :extras))
 
 mutable struct Sparse
     count::Int
@@ -87,8 +85,7 @@ function Base.setproperty!(obj::Sparse, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Sparse}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Sparse}) = (:extensions, :extras)
+JSON.lower(x::Sparse) = _lower_omitting(x, (:extensions, :extras))
 
 mutable struct Accessor
     bufferView::Union{Nothing,Int}
@@ -153,5 +150,4 @@ function Base.setproperty!(obj::Accessor, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Accessor}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Accessor}) = (:bufferView, :byteOffset, :normalized, :max, :min, :sparse, :name, :extensions, :extras)
+JSON.lower(x::Accessor) = _lower_omitting(x, (:bufferView, :byteOffset, :normalized, :max, :min, :sparse, :name, :extensions, :extras))

@@ -21,5 +21,4 @@ function Base.setproperty!(obj::Buffer, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Buffer}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Buffer}) = (:uri, :name, :extensions, :extras)
+JSON.lower(x::Buffer) = _lower_omitting(x, (:uri, :name, :extensions, :extras))
