@@ -4,7 +4,7 @@
 [![TagBot](https://github.com/Gnimuc/GLTF.jl/actions/workflows/TagBot.yml/badge.svg)](https://github.com/Gnimuc/GLTF.jl/actions/workflows/TagBot.yml)
 [![Codecov](https://codecov.io/gh/Gnimuc/GLTF.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/Gnimuc/GLTF.jl)
 
-[glTF](https://github.com/KhronosGroup/glTF) 2.0 loader and writer based on [JSON3](https://github.com/quinnj/JSON3.jl). This package only handles .gltf and not .glb.
+[glTF](https://github.com/KhronosGroup/glTF) 2.0 loader and writer based on [JSON.jl](https://github.com/JuliaIO/JSON.jl). This package only handles .gltf and not .glb.
 
 ## Installation
 ```julia
@@ -15,7 +15,7 @@ pkg> add GLTF
 glTF file format is just a JSON file + raw binaries. This package defines Julia types that map to the corresponding glTF objects. 
 
 ```julia
-julia> using JSON3, GLTF
+julia> using JSON, GLTF
 
 julia> accessor_str = """{
          "bufferView": 0,
@@ -36,7 +36,7 @@ julia> accessor_str = """{
        }"""
 "{\n  \"bufferView\": 0,\n  \"componentType\": 5126,\n  \"count\": 24,\n  \"type\": \"VEC3\",\n  \"max\": [\n    0.3,\n    0.3,\n    0.3\n  ],\n  \"min\": [\n    -0.3,\n    -0.3,\n    -0.3\n  ],\n  \"name\": \"Positions Accessor\"\n}"
 
-julia> accessor = JSON3.read(accessor_str, GLTF.Accessor)
+julia> accessor = JSON.parse(accessor_str, GLTF.Accessor)
 GLTF.Accessor:
   bufferView: 0
   componentType: 5126

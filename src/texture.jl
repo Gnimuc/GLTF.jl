@@ -24,5 +24,4 @@ function Base.setproperty!(obj::Texture, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Texture}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Texture}) = (:sampler, :source, :name, :extensions, :extras)
+JSON.lower(x::Texture) = _lower_omitting(x, (:sampler, :source, :name, :extensions, :extras))

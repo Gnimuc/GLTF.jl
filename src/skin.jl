@@ -28,5 +28,4 @@ function Base.setproperty!(obj::Skin, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Skin}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Skin}) = (:inverseBindMatrices, :skeleton, :name, :extensions, :extras)
+JSON.lower(x::Skin) = _lower_omitting(x, (:inverseBindMatrices, :skeleton, :name, :extensions, :extras))

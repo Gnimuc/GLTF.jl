@@ -27,5 +27,4 @@ function Base.setproperty!(obj::Image, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Image}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Image}) = (:uri, :mimeType, :bufferView, :name, :extensions, :extras)
+JSON.lower(x::Image) = _lower_omitting(x, (:uri, :mimeType, :bufferView, :name, :extensions, :extras))

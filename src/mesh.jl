@@ -37,8 +37,7 @@ function Base.setproperty!(obj::Primitive, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Primitive}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Primitive}) = (:indices, :material, :mode, :targets, :extensions, :extras)
+JSON.lower(x::Primitive) = _lower_omitting(x, (:indices, :material, :mode, :targets, :extensions, :extras))
 
 
 mutable struct Mesh
@@ -57,5 +56,4 @@ mutable struct Mesh
     end
 end
 
-JSON3.StructType(::Type{Mesh}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Mesh}) = (:weights, :name, :extensions, :extras)
+JSON.lower(x::Mesh) = _lower_omitting(x, (:weights, :name, :extensions, :extras))
