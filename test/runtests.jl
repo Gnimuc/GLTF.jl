@@ -2,10 +2,15 @@ using GLTF
 using Test
 using Downloads
 using ZipFile
+using JSON
 
 const TEST_ASSETS_URL = "https://github.com/KhronosGroup/glTF-Asset-Generator/releases/download/v0.6.1/GeneratedAssets-0.6.1.zip"
 const TEST_LOCAL_PATH = joinpath(@__DIR__, "download.zip")
 const ASSETS_LOCAL_PATH = joinpath(@__DIR__, "assets")
+
+@testset "serialization of partially initialized structs" begin
+    @test JSON.json(GLTF.Asset()) == "{}"
+end
 
 if !isfile(TEST_LOCAL_PATH)
     @info "downloading test assets..."
