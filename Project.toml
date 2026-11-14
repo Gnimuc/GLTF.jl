@@ -1,7 +1,7 @@
 name = "GLTF"
 uuid = "aeeaf58c-ab4d-11e9-3a9f-9b6bf58b5bc3"
 authors = ["Yupei Qi <qiyupei@gmail.com>"]
-version = "0.5.0-DEV"
+version = "0.5.0"
 
 [deps]
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
