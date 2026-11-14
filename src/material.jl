@@ -27,8 +27,7 @@ function Base.setproperty!(obj::TextureInfo, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{TextureInfo}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{TextureInfo}) = (:texCoord, :extensions, :extras)
+JSON.lower(x::TextureInfo) = _lower_omitting(x, (:texCoord, :extensions, :extras))
 
 
 mutable struct NormalTextureInfo
@@ -63,8 +62,7 @@ function Base.setproperty!(obj::NormalTextureInfo, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{NormalTextureInfo}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{NormalTextureInfo}) = (:texCoord, :scale, :extensions, :extras)
+JSON.lower(x::NormalTextureInfo) = _lower_omitting(x, (:texCoord, :scale, :extensions, :extras))
 
 
 mutable struct OcclusionTextureInfo
@@ -101,8 +99,7 @@ function Base.setproperty!(obj::OcclusionTextureInfo, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{OcclusionTextureInfo}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{OcclusionTextureInfo}) = (:texCoord, :strength, :extensions, :extras)
+JSON.lower(x::OcclusionTextureInfo) = _lower_omitting(x, (:texCoord, :strength, :extensions, :extras))
 
 
 mutable struct PBRMetallicRoughness
@@ -146,8 +143,7 @@ function Base.setproperty!(obj::PBRMetallicRoughness, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{PBRMetallicRoughness}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{PBRMetallicRoughness}) = (:baseColorFactor, :baseColorTexture, :metallicFactor, :roughnessFactor, :metallicRoughnessTexture, :extensions, :extras)
+JSON.lower(x::PBRMetallicRoughness) = _lower_omitting(x, (:baseColorFactor, :baseColorTexture, :metallicFactor, :roughnessFactor, :metallicRoughnessTexture, :extensions, :extras))
 
 
 mutable struct Material
@@ -201,5 +197,4 @@ function Base.setproperty!(obj::Material, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Material}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Material}) = (:pbrMetallicRoughness, :normalTexture, :occlusionTexture, :emissiveTexture, :emissiveFactor, :alphaMode, :alphaCutoff, :doubleSided, :name, :extensions, :extras)
+JSON.lower(x::Material) = _lower_omitting(x, (:pbrMetallicRoughness, :normalTexture, :occlusionTexture, :emissiveTexture, :emissiveFactor, :alphaMode, :alphaCutoff, :doubleSided, :name, :extensions, :extras))

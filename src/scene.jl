@@ -21,5 +21,4 @@ function Base.setproperty!(obj::Scene, sym::Symbol, x)
     setfield!(obj, sym, x)
 end
 
-JSON3.StructType(::Type{Scene}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Scene}) = (:nodes, :name, :extensions, :extras)
+JSON.lower(x::Scene) = _lower_omitting(x, (:nodes, :name, :extensions, :extras))

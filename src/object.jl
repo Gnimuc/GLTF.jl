@@ -42,7 +42,6 @@ mutable struct Object
     end
 end
 
-JSON3.StructType(::Type{Object}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Object}) = (:extensionsUsed, :extensionsRequired, :accessors, :animations,
+JSON.lower(x::Object) = _lower_omitting(x, (:extensionsUsed, :extensionsRequired, :accessors, :animations,
                                      :buffers, :bufferViews, :cameras, :images, :materials, :meshes,
-                                     :nodes, :samplers, :scene, :scenes, :skins, :textures, :extensions, :extras)
+                                     :nodes, :samplers, :scene, :scenes, :skins, :textures, :extensions, :extras))

@@ -16,5 +16,4 @@ mutable struct Asset
     end
 end
 
-JSON3.StructType(::Type{Asset}) = JSON3.Mutable()
-StructTypes.omitempties(::Type{Asset}) = (:copyright, :generator, :minVersion, :extensions, :extras)
+JSON.lower(x::Asset) = _lower_omitting(x, (:copyright, :generator, :minVersion, :extensions, :extras))
