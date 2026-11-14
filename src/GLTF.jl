@@ -8,7 +8,7 @@ export load, save
 function _lower_omitting(x, omitted)
     names = fieldnames(typeof(x))
     (; (name => getfield(x, name) for name in names if
-       !(name in omitted && _json_empty(getfield(x, name))))...)
+       isdefined(x, name) && !(name in omitted && _json_empty(getfield(x, name))))...)
 end
 
 _json_empty(x) = x === nothing || (x isa Union{AbstractArray, AbstractDict, AbstractString} && isempty(x))

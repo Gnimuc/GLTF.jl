@@ -13,9 +13,9 @@ if !isfile(TEST_LOCAL_PATH)
 end
 
 if !isdir(ASSETS_LOCAL_PATH)
-    mkpath(ASSETS_LOCAL_PATH)
     archive = ZipFile.Reader(TEST_LOCAL_PATH)
     try
+        mkpath(ASSETS_LOCAL_PATH)
         for entry in archive.files
             parts = split(entry.name, '/')
             (isabspath(entry.name) ||
