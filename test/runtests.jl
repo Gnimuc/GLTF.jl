@@ -18,7 +18,9 @@ if !isdir(ASSETS_LOCAL_PATH)
     try
         for entry in archive.files
             parts = split(entry.name, '/')
-            any(part -> part == "..", parts) && error("invalid path in test asset archive")
+            (isabspath(entry.name) ||
+             any(part -> part == ".." || occursin('\\', part) || occursin(':', part), parts)) &&
+                error("invalid path in test asset archive")
             path = joinpath(ASSETS_LOCAL_PATH, parts...)
             if endswith(entry.name, "/")
                 mkpath(path)
